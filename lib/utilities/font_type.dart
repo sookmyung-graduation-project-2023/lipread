@@ -1,0 +1,1 @@
+enum FontType { pretendard, bronova }
