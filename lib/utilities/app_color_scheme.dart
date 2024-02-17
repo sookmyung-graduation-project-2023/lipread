@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 class AppColor {
   static const Color primaryColor = Color(0xff197AFF);
   static const Color primaryLightColor = Color(0xffF4F9FF);
+  static const Color orangeColor = Color(0xffFF7C47);
   static final GrayScale grayScale = GrayScale();
 }
 
