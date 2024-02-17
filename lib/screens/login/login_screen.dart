@@ -12,8 +12,11 @@ import 'package:lipread/utilities/font_type.dart';
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
 
-  void _signInWithGoogle() async {
+  Future<void> _signInWithGoogle() async {
+    debugPrint('sign in with Google');
     final googleAccount = await GoogleService.signin();
+    debugPrint('googleAccount: $googleAccount');
+
     if (googleAccount != null) {
       final user = _createUserWith(googleAccount);
       await LoginService.saveUser(user);
@@ -97,8 +100,8 @@ class LoginScreen extends StatelessWidget {
                     height: 60,
                   ),
                   TextButton(
-                    onPressed: () {
-                      _signInWithGoogle();
+                    onPressed: () async {
+                      await _signInWithGoogle();
                       _routeToHomeScreen(context);
                     },
                     child: const Text(
