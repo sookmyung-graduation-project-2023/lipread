@@ -11,7 +11,7 @@ class MessageCard extends StatelessWidget {
   final String role;
   final String text;
   final String videoUrl;
-  final MessageStateType messageStateType = MessageStateType.beforeRecorded;
+  final LearningStateType learningStateType;
 
   const MessageCard({
     super.key,
@@ -19,6 +19,7 @@ class MessageCard extends StatelessWidget {
     required this.role,
     required this.text,
     required this.videoUrl,
+    this.learningStateType = LearningStateType.beforeRecorded,
   });
 
   @override
@@ -117,8 +118,8 @@ class MessageCard extends StatelessWidget {
             ],
           ),
         ),
-        if (messageStateType == MessageStateType.recorded ||
-            messageStateType == MessageStateType.corrected)
+        if (learningStateType == LearningStateType.recorded ||
+            learningStateType == LearningStateType.corrected)
           Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -127,29 +128,32 @@ class MessageCard extends StatelessWidget {
               ),
               Row(
                 children: [
-                  Expanded(
-                    child: TextButton(
-                      onPressed: () {},
-                      style: smallTextButtonGrayStyle,
-                      child: const Text(
-                        '다시 녹음',
+                  if (learningStateType == LearningStateType.recorded)
+                    Expanded(
+                      child: TextButton(
+                        onPressed: () {},
+                        style: smallTextButtonGrayStyle,
+                        child: const Text(
+                          '다시 녹음',
+                        ),
                       ),
                     ),
-                  ),
-                  Expanded(
-                    child: TextButton(
-                      onPressed: () {},
-                      style: smallTextButtonPrimaryColorStyle,
-                      child: const Text('정답 확인'),
+                  if (learningStateType == LearningStateType.recorded)
+                    Expanded(
+                      child: TextButton(
+                        onPressed: () {},
+                        style: smallTextButtonPrimaryColorStyle,
+                        child: const Text('정답 확인'),
+                      ),
                     ),
-                  ),
-                  Expanded(
-                    child: TextButton(
-                      onPressed: () {},
-                      style: smallTextButtonPrimaryColorStyle,
-                      child: const Text('다음으로'),
+                  if (learningStateType == LearningStateType.corrected)
+                    Expanded(
+                      child: TextButton(
+                        onPressed: () {},
+                        style: smallTextButtonPrimaryColorStyle,
+                        child: const Text('다음으로'),
+                      ),
                     ),
-                  ),
                 ],
               ),
             ],

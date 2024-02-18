@@ -9,6 +9,7 @@ import 'package:lipread/models/template_model.dart';
 import 'package:lipread/models/unofficial_template_model.dart';
 import 'package:lipread/services/api.dart';
 import 'package:lipread/services/token_service.dart';
+import 'package:lipread/utilities/variables.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class TemplateService {
@@ -17,7 +18,8 @@ class TemplateService {
   static const String official = 'official';
   static const String personal = 'personal';
 
-  static Future<List<OfficialTemplateModel>> getOfficialTemplates() async {
+  static Future<List<OfficialTemplateModel>> getOfficialTemplates(
+      {OfficialCategoryType category = OfficialCategoryType.all}) async {
     List<OfficialTemplateModel> officialTemplateInstances = [];
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -27,7 +29,8 @@ class TemplateService {
       HttpHeaders.authorizationHeader: "Bearer $accessToken",
     };
 
-    final url = Uri.parse('${API.baseURL}/$roleplayList/$official');
+    final url = _getUriBy(category);
+
     final response = await http.get(url, headers: headers);
     if (response.statusCode == 401) {
       await TokenService.refreshAccessToken();
@@ -46,6 +49,17 @@ class TemplateService {
     throw Error();
   }
 
+  static Uri _getUriBy(OfficialCategoryType category) {
+    if (category == OfficialCategoryType.all) {
+      return Uri.https(API.baseURL, '$roleplayList/$official');
+    } else {
+      final queryParameters = {
+        'category': category.name,
+      };
+      return Uri.https(API.baseURL, '$roleplayList/$official', queryParameters);
+    }
+  }
+
   static Future<List<UnOfficialTemplateModel>> getUnOfficialTemplate() async {
     List<UnOfficialTemplateModel> unOfficialTemplateInstances = [];
 
@@ -56,7 +70,7 @@ class TemplateService {
       HttpHeaders.authorizationHeader: "Bearer $accessToken",
     };
 
-    final url = Uri.parse('${API.baseURL}/$roleplayList/$personal');
+    final url = Uri.https(API.baseURL, '$roleplayList/$personal');
     final response = await http.get(url, headers: headers);
 
     if (response.statusCode == 401) {
@@ -85,7 +99,7 @@ class TemplateService {
       HttpHeaders.authorizationHeader: "Bearer $accessToken",
     };
 
-    final url = Uri.parse('${API.baseURL}/$roleplay/$id');
+    final url = Uri.https(API.baseURL, '$roleplay/$id');
     final response = await http.get(url, headers: headers);
 
     if (response.statusCode == 401) {

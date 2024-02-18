@@ -19,7 +19,7 @@ class TokenService {
       'refresh': refreshToken,
     };
 
-    final url = Uri.parse('${API.baseURL}/$refresh');
+    final url = Uri.https(API.baseURL, refresh);
 
     try {
       final response = await http.post(

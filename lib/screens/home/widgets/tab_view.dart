@@ -3,12 +3,17 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:lipread/models/official_template_model.dart';
 import 'package:lipread/models/unofficial_template_model.dart';
+import 'package:lipread/screens/home/widgets/filter_button.dart';
 import 'package:lipread/screens/template_description/template_description_screen.dart';
 import 'package:lipread/services/template_service.dart';
 import 'package:lipread/utilities/app_color_scheme.dart';
 import 'package:lipread/utilities/font_type.dart';
+import 'package:lipread/utilities/variables.dart';
+import 'package:lipread/widgets/empty_data.dart';
 
 import 'customed_tab_bar.dart';
+import 'official_template_card.dart';
+import 'unofficial_template_card.dart';
 
 class TabView extends StatefulWidget {
   const TabView({
@@ -44,6 +49,14 @@ class _TabViewState extends State<TabView> with SingleTickerProviderStateMixin {
     super.dispose();
   }
 
+  void _handleCategorySelected(OfficialCategoryType category) {
+    setState(() {
+      _officialTemplates =
+          TemplateService.getOfficialTemplates(category: category);
+      debugPrint(category.value);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -56,7 +69,7 @@ class _TabViewState extends State<TabView> with SingleTickerProviderStateMixin {
           height: 24,
         ),
         SizedBox(
-          height: 1000,
+          height: 600,
           child: TabBarView(
             controller: _tabController,
             children: [
@@ -82,74 +95,48 @@ class _TabViewState extends State<TabView> with SingleTickerProviderStateMixin {
                                   style:
                                       Theme.of(context).textTheme.titleMedium,
                                 ),
-                                TextButton(
-                                  onPressed: () {},
-                                  style: TextButton.styleFrom(
-                                    minimumSize: const Size(0, 0),
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 8, horizontal: 16),
-                                    foregroundColor: AppColor.grayScale.g700,
-                                    backgroundColor: Colors.transparent,
-                                    shape: RoundedRectangleBorder(
-                                      side: BorderSide(
-                                          color: AppColor.grayScale.g700),
-                                      borderRadius: BorderRadius.circular(100),
-                                    ),
-                                    textStyle: TextStyle(
-                                      fontFamily: FontType.pretendard.name,
-                                      fontSize: 14,
-                                      height: 1,
-                                      fontVariations: const [
-                                        FontVariation('wght', 500),
-                                      ],
-                                    ),
-                                  ),
-                                  child: const Row(
-                                    children: [
-                                      Text(
-                                        '전체',
-                                      ),
-                                      SizedBox(
-                                        width: 8,
-                                      ),
-                                      Icon(Icons.arrow_drop_down_outlined),
-                                    ],
-                                  ),
+                                FilterButton(
+                                  handleCategorySelected:
+                                      _handleCategorySelected,
                                 ),
                               ],
                             ),
                             const SizedBox(
                               height: 12,
                             ),
-                            GridView.builder(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: officialTemplates.length,
-                              gridDelegate:
-                                  const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                                mainAxisSpacing: 12,
-                                crossAxisSpacing: 12,
-                                childAspectRatio: .7,
-                              ),
-                              itemBuilder: (context, index) {
-                                return GestureDetector(
-                                  onTap: () => Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          TemplateDescriptionScreen(
-                                              officialTemplates[index].id),
+                            officialTemplates.isEmpty
+                                ? const Center(
+                                    child:
+                                        EmptyData(text: '올바른 결과를 찾을 수 없습니다 💦'))
+                                : GridView.builder(
+                                    shrinkWrap: true,
+                                    itemCount: officialTemplates.length,
+                                    gridDelegate:
+                                        const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 2,
+                                      mainAxisSpacing: 12,
+                                      crossAxisSpacing: 12,
+                                      childAspectRatio: .7,
                                     ),
+                                    itemBuilder: (context, index) {
+                                      return GestureDetector(
+                                        onTap: () => Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                TemplateDescriptionScreen(
+                                                    officialTemplates[index]
+                                                        .id),
+                                          ),
+                                        ),
+                                        child: OfficialTemplateCard(
+                                          id: officialTemplates[index].id,
+                                          title: officialTemplates[index].title,
+                                          emoji: officialTemplates[index].emoji,
+                                        ),
+                                      );
+                                    },
                                   ),
-                                  child: OfficialTemplateCard(
-                                    id: officialTemplates[index].id,
-                                    title: officialTemplates[index].title,
-                                    emoji: officialTemplates[index].emoji,
-                                  ),
-                                );
-                              },
-                            ),
                           ],
                         ),
                       );
@@ -238,126 +225,6 @@ class _TabViewState extends State<TabView> with SingleTickerProviderStateMixin {
           ),
         ),
       ],
-    );
-  }
-}
-
-class OfficialTemplateCard extends StatelessWidget {
-  final String id;
-  final String title;
-  final String emoji;
-
-  const OfficialTemplateCard({
-    super.key,
-    required this.id,
-    required this.title,
-    required this.emoji,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        vertical: 20,
-        horizontal: 20,
-      ),
-      decoration: BoxDecoration(
-        borderRadius: const BorderRadius.all(
-          Radius.circular(12),
-        ),
-        border: Border.all(
-          width: 1,
-          color: AppColor.grayScale.g200,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            title,
-            style: Theme.of(context).textTheme.bodyLarge,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-          Text(
-            emoji,
-            style: const TextStyle(
-              fontSize: 52,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class UnOfficialTemplateCard extends StatelessWidget {
-  final String id;
-  final String title;
-  final String emoji;
-  final String? originalTemplateName;
-
-  const UnOfficialTemplateCard({
-    super.key,
-    required this.id,
-    required this.title,
-    required this.emoji,
-    this.originalTemplateName,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        vertical: 28,
-        horizontal: 24,
-      ),
-      decoration: BoxDecoration(
-        borderRadius: const BorderRadius.all(
-          Radius.circular(12),
-        ),
-        border: Border.all(
-          width: 1,
-          color: AppColor.grayScale.g200,
-        ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  originalTemplateName != null
-                      ? '$originalTemplateName로부터 생성'
-                      : '새로운 주제',
-                  style: Theme.of(context).textTheme.labelMedium,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(
-                  height: 4,
-                ),
-                Text(
-                  title,
-                  style: Theme.of(context).textTheme.bodyLarge,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-          ),
-          Text(
-            emoji,
-            style: const TextStyle(
-              fontSize: 28,
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

@@ -1,10 +1,13 @@
 enum TokenType { accessToken, refreshToken }
 
+enum MessageCodeType { correct, wrong, answer }
+
 enum RoleType { woman, man, oldWoman, oldMan }
 
-enum MessageStateType { beforeRecorded, recorded, corrected, completed }
+enum LearningStateType { beforeRecorded, recorded, corrected, completed }
 
 enum OfficialCategoryType {
+  all,
   restaurant,
   transportation,
   shopping,
@@ -20,8 +23,10 @@ enum OfficialCategoryType {
 }
 
 extension OfficialCategoryTypeExtension on OfficialCategoryType {
-  String get name {
+  String get value {
     switch (this) {
+      case OfficialCategoryType.all:
+        return '전체';
       case OfficialCategoryType.restaurant:
         return '음식점';
       case OfficialCategoryType.transportation:

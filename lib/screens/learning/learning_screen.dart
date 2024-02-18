@@ -1,5 +1,6 @@
 import 'package:avatar_glow/avatar_glow.dart';
 import 'package:flutter/material.dart';
+import 'package:lipread/utilities/variables.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:lipread/models/message_model.dart';
@@ -22,7 +23,8 @@ class LearningScreen extends StatefulWidget {
 }
 
 class _LearningScreenState extends State<LearningScreen> {
-  int currentLearningMessageIndex = 0;
+  final int _currentLearningMessageIndex = 0;
+  LearningStateType _learningStateType = LearningStateType.beforeRecorded;
   bool _speechEnabled = false;
   String _recognizedWords = '';
 
@@ -71,6 +73,7 @@ class _LearningScreenState extends State<LearningScreen> {
   void _stopListening() async {
     debugPrint('Stop Listening');
     await _speechToText.stop();
+    _learningStateType = LearningStateType.recorded;
     setState(() {});
   }
 
@@ -134,6 +137,7 @@ class _LearningScreenState extends State<LearningScreen> {
                                     text: _recognizedWords,
                                     role: messages[index].text,
                                     videoUrl: messages[index].videoUrl,
+                                    learningStateType: _learningStateType,
                                   );
                                 },
                                 separatorBuilder: (context, index) {
@@ -141,7 +145,7 @@ class _LearningScreenState extends State<LearningScreen> {
                                     height: 20,
                                   );
                                 },
-                                itemCount: currentLearningMessageIndex + 1),
+                                itemCount: _currentLearningMessageIndex + 1),
                             const SizedBox(
                               height: 48,
                             ),

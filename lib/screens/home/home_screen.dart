@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:lipread/screens/account/account_screen.dart';
 import 'package:lipread/screens/history/history_screen.dart';
 import 'package:lipread/screens/notification/notification_screen.dart';
+import 'package:lipread/utilities/app_color_scheme.dart';
+import 'widgets/home_banner.dart';
 import 'widgets/tab_view.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -42,30 +44,26 @@ class HomeScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        physics: const ClampingScrollPhysics(),
+      body: const SingleChildScrollView(
+        physics: ClampingScrollPhysics(),
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
+              padding: EdgeInsets.symmetric(horizontal: 24),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const SizedBox(
+                  SizedBox(
                     height: 20,
                   ),
-                  Container(
-                    child: Text(
-                      '재은님 오늘도 힘내서 구어 연습해요!',
-                      style: Theme.of(context).textTheme.headlineMedium,
-                    ),
-                  ),
-                  const SizedBox(
+                  HomeBanner(),
+                  SizedBox(
                     height: 20,
                   ),
                 ],
               ),
             ),
-            const TabView(),
+            TabView(),
           ],
         ),
       ),

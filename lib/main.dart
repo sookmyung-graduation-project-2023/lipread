@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:lipread/screens/login/login_screen.dart';
+import 'package:lipread/screens/home/widgets/filter_button.dart';
 import 'package:lipread/utilities/app_color_scheme.dart';
 import 'package:lipread/utilities/font_type.dart';
 
@@ -24,11 +25,17 @@ class MyApp extends StatelessWidget {
         appBarTheme: appBarTheme,
         textButtonTheme: textButtonTheme,
         textTheme: textTheme,
+        bottomSheetTheme: bottomSheetThemeData,
       ),
       home: const LoginScreen(),
     );
   }
 }
+
+const bottomSheetThemeData = BottomSheetThemeData(
+  backgroundColor: Colors.white,
+  surfaceTintColor: Colors.transparent,
+);
 
 var appBarTheme = AppBarTheme(
   color: Colors.transparent,
@@ -84,14 +91,14 @@ var textTheme = TextTheme(
     fontFamily: FontType.pretendard.name,
     fontVariations: const [FontVariation('wght', 600)],
     color: AppColor.primaryColor,
-    height: 1.5,
+    height: 1.4,
   ),
   headlineSmall: TextStyle(
     fontSize: 24,
     fontFamily: FontType.pretendard.name,
     fontVariations: const [FontVariation('wght', 500)],
     color: Colors.white,
-    height: 1.5,
+    height: 1.4,
   ),
   titleLarge: TextStyle(
     fontSize: 20,

@@ -80,7 +80,7 @@ class _TemplateDescriptionScreenState extends State<TemplateDescriptionScreen> {
                                                   width: 4,
                                                 ),
                                                 SmallTag(templateDescription
-                                                    .officialCategory!.name),
+                                                    .officialCategory!.value),
                                               ],
                                             )
                                           : Text(

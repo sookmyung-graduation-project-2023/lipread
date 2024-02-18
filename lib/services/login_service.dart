@@ -11,7 +11,7 @@ class LoginService {
   static const login = 'login';
 
   static Future<void> saveUser(UserModel user) async {
-    final url = Uri.parse('${API.baseURL}/$login');
+    final url = Uri.https(API.baseURL, login);
     final headers = {HttpHeaders.contentTypeHeader: "application/json"};
     final body = json.encode(user.toJson());
 
