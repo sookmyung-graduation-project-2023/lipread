@@ -1,7 +1,4 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
-import 'package:lipread/main.dart';
 import 'package:lipread/utilities/app_color_scheme.dart';
 import 'package:lipread/utilities/font_type.dart';
 import 'package:lipread/utilities/variables.dart';
@@ -120,8 +117,8 @@ class _FilterButtonState extends State<FilterButton>
                       height: 12,
                     ),
                     Wrap(
-                      spacing: 12,
-                      runSpacing: 12,
+                      spacing: 8,
+                      runSpacing: 4,
                       children: [
                         for (var category in OfficialCategoryType.values)
                           CagegoryTag(

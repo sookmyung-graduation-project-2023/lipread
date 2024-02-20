@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:lipread/screens/account/account_screen.dart';
 import 'package:lipread/screens/history/history_screen.dart';
 import 'package:lipread/screens/notification/notification_screen.dart';
-import 'package:lipread/utilities/app_color_scheme.dart';
 import 'widgets/home_banner.dart';
 import 'widgets/tab_view.dart';
 

@@ -1,11 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:lipread/models/message_check_model.dart';
 import 'package:lipread/models/message_model.dart';
 import 'package:lipread/services/api.dart';
 import 'package:lipread/services/token_service.dart';
+import 'package:lipread/utilities/variables.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LearningService {
@@ -52,10 +54,10 @@ class LearningService {
       HttpHeaders.authorizationHeader: "Bearer $accessToken",
     };
 
-    Map<String, String> body = {
+    var body = json.encode({
       "input": input,
       "answer": answer,
-    };
+    });
 
     final url = Uri.https(API.baseURL, '$roleplay/$checkChat');
     final response = await http.post(
@@ -70,10 +72,11 @@ class LearningService {
     } else if (response.statusCode == 200) {
       final Map<String, dynamic> body =
           jsonDecode(utf8.decode(response.bodyBytes));
+
       if (body["data"] != null) {
         for (var messageCheck in body["data"]['check']) {
           messageCheckInstances.add(MessageCheckModel(
-            code: messageCheck[0],
+            code: MessageCodeType.answer,
             text: messageCheck[1],
           ));
         }

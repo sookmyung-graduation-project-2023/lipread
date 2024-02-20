@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:lipread/utilities/app_color_scheme.dart';
 import 'package:lipread/utilities/font_type.dart';
@@ -7,11 +5,15 @@ import 'package:dotted_line/dotted_line.dart';
 import 'package:lipread/utilities/variables.dart';
 
 class MessageCard extends StatelessWidget {
-  final String id;
+  final int id;
   final String role;
   final String text;
   final String videoUrl;
   final LearningStateType learningStateType;
+
+  final void Function()? onPressedRerecord;
+  final void Function()? onPressedCheck;
+  final void Function()? onPressedComplete;
 
   const MessageCard({
     super.key,
@@ -20,6 +22,9 @@ class MessageCard extends StatelessWidget {
     required this.text,
     required this.videoUrl,
     this.learningStateType = LearningStateType.beforeRecorded,
+    this.onPressedRerecord,
+    this.onPressedCheck,
+    this.onPressedComplete,
   });
 
   @override
@@ -126,36 +131,42 @@ class MessageCard extends StatelessWidget {
               const SizedBox(
                 height: 12,
               ),
-              Row(
-                children: [
-                  if (learningStateType == LearningStateType.recorded)
+              if (learningStateType == LearningStateType.recorded)
+                Row(
+                  children: [
                     Expanded(
                       child: TextButton(
-                        onPressed: () {},
+                        onPressed: onPressedRerecord,
                         style: smallTextButtonGrayStyle,
                         child: const Text(
                           '다시 녹음',
                         ),
                       ),
                     ),
-                  if (learningStateType == LearningStateType.recorded)
+                    const SizedBox(
+                      width: 12,
+                    ),
                     Expanded(
                       child: TextButton(
-                        onPressed: () {},
+                        onPressed: onPressedCheck,
                         style: smallTextButtonPrimaryColorStyle,
                         child: const Text('정답 확인'),
                       ),
                     ),
-                  if (learningStateType == LearningStateType.corrected)
+                  ],
+                ),
+              if (learningStateType == LearningStateType.corrected)
+                Row(
+                  children: [
                     Expanded(
                       child: TextButton(
-                        onPressed: () {},
+                        onPressed: onPressedComplete,
                         style: smallTextButtonPrimaryColorStyle,
                         child: const Text('다음으로'),
                       ),
                     ),
-                ],
-              ),
+                  ],
+                ),
             ],
           )
       ],

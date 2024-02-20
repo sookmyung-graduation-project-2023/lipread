@@ -31,12 +31,12 @@ class HomeBanner extends StatelessWidget {
       child: Stack(
         children: [
           Positioned(
-            top: -70,
-            right: -180,
+            top: -80,
+            right: -160,
             child: Image.asset(
               'assets/images/img_speaking_person.png',
               fit: BoxFit.contain,
-              width: 400,
+              width: 380,
             ),
           ),
           Padding(

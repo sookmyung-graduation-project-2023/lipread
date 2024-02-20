@@ -23,7 +23,7 @@ class LearningScreen extends StatefulWidget {
 }
 
 class _LearningScreenState extends State<LearningScreen> {
-  final int _currentLearningMessageIndex = 0;
+  int _currentLearningMessageIndex = 0;
   LearningStateType _learningStateType = LearningStateType.beforeRecorded;
   bool _speechEnabled = false;
   String _recognizedWords = '';
@@ -81,6 +81,7 @@ class _LearningScreenState extends State<LearningScreen> {
     debugPrint('음성 결과: ${result.finalResult}, 단어: ${result.recognizedWords}');
     setState(() {
       _recognizedWords = result.recognizedWords;
+      if (result.finalResult) _learningStateType = LearningStateType.recorded;
     });
   }
 
@@ -132,12 +133,52 @@ class _LearningScreenState extends State<LearningScreen> {
                                 shrinkWrap: true,
                                 primary: false,
                                 itemBuilder: (context, index) {
+                                  if (index < _currentLearningMessageIndex) {
+                                    return MessageCard(
+                                      id: index,
+                                      text: messages[index].text,
+                                      role: messages[index].role,
+                                      videoUrl: messages[index].videoUrl,
+                                      learningStateType:
+                                          LearningStateType.completed,
+                                    );
+                                  }
                                   return MessageCard(
-                                    id: messages[index].id,
+                                    id: index,
                                     text: _recognizedWords,
-                                    role: messages[index].text,
+                                    role: messages[index].role,
                                     videoUrl: messages[index].videoUrl,
                                     learningStateType: _learningStateType,
+                                    onPressedRerecord: () {
+                                      setState(() {
+                                        _recognizedWords = '';
+                                        _learningStateType =
+                                            LearningStateType.beforeRecorded;
+                                      });
+                                    },
+                                    onPressedCheck: () async {
+                                      messages[index].messageCheck =
+                                          await LearningService
+                                              .checkMessageWith(
+                                                  _recognizedWords,
+                                                  messages[index].text);
+                                      debugPrint(messages[index]
+                                          .messageCheck!
+                                          .toString());
+
+                                      setState(() {
+                                        _learningStateType =
+                                            LearningStateType.corrected;
+                                      });
+                                    },
+                                    onPressedComplete: () {
+                                      setState(() {
+                                        _learningStateType =
+                                            LearningStateType.beforeRecorded;
+                                        _recognizedWords = '';
+                                        _currentLearningMessageIndex++;
+                                      });
+                                    },
                                   );
                                 },
                                 separatorBuilder: (context, index) {
@@ -147,38 +188,40 @@ class _LearningScreenState extends State<LearningScreen> {
                                 },
                                 itemCount: _currentLearningMessageIndex + 1),
                             const SizedBox(
-                              height: 48,
+                              height: 160,
                             ),
                           ]),
                         ),
                       ),
-                      Positioned(
-                        bottom: 44,
-                        child: AvatarGlow(
-                          glowColor: AppColor.primaryColor,
-                          duration: const Duration(milliseconds: 1200),
-                          glowRadiusFactor: 0.3,
-                          animate: !_speechToText.isNotListening,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: AppColor.primaryColor,
-                              borderRadius: BorderRadius.circular(100),
+                      if (_learningStateType ==
+                          LearningStateType.beforeRecorded)
+                        Positioned(
+                          bottom: 44,
+                          child: AvatarGlow(
+                            glowColor: AppColor.primaryColor,
+                            duration: const Duration(milliseconds: 1200),
+                            glowRadiusFactor: 0.3,
+                            animate: !_speechToText.isNotListening,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: AppColor.primaryColor,
+                                borderRadius: BorderRadius.circular(100),
+                              ),
+                              child: IconButton(
+                                  onPressed: _speechToText.isNotListening
+                                      ? _startListening
+                                      : _stopListening,
+                                  color: AppColor.primaryLightColor,
+                                  padding: const EdgeInsets.all(20),
+                                  iconSize: 40,
+                                  icon: Icon(
+                                    _speechToText.isNotListening
+                                        ? Icons.keyboard_voice_rounded
+                                        : Icons.multitrack_audio_rounded,
+                                  )),
                             ),
-                            child: IconButton(
-                                onPressed: _speechToText.isNotListening
-                                    ? _startListening
-                                    : _stopListening,
-                                color: AppColor.primaryLightColor,
-                                padding: const EdgeInsets.all(20),
-                                iconSize: 40,
-                                icon: Icon(
-                                  _speechToText.isNotListening
-                                      ? Icons.keyboard_voice_rounded
-                                      : Icons.multitrack_audio_rounded,
-                                )),
                           ),
                         ),
-                      ),
                     ],
                   )),
                 ],

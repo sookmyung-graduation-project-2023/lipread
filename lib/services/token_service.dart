@@ -32,7 +32,9 @@ class TokenService {
       } else {
         _handleError(response);
       }
-    } catch (e) {}
+    } catch (e) {
+      debugPrint(e.toString());
+    }
   }
 
   static void _handleSuccessOfRefreshingToken(http.Response response) {
@@ -59,7 +61,5 @@ class TokenService {
 
   static void _handleError(http.Response response) {
     debugPrint('Token을 Refresh하지 못했습니다.');
-    final String responseBody = utf8.decode(response.bodyBytes);
-    final Map<String, dynamic> json = jsonDecode(responseBody);
   }
 }

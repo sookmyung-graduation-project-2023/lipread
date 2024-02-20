@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:lipread/models/official_template_model.dart';
 import 'package:lipread/models/unofficial_template_model.dart';
@@ -7,7 +5,6 @@ import 'package:lipread/screens/home/widgets/filter_button.dart';
 import 'package:lipread/screens/template_description/template_description_screen.dart';
 import 'package:lipread/services/template_service.dart';
 import 'package:lipread/utilities/app_color_scheme.dart';
-import 'package:lipread/utilities/font_type.dart';
 import 'package:lipread/utilities/variables.dart';
 import 'package:lipread/widgets/empty_data.dart';
 

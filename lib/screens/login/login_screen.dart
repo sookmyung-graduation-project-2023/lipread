@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:lipread/models/user_model.dart';
@@ -7,7 +5,6 @@ import 'package:lipread/screens/home/home_screen.dart';
 import 'package:lipread/services/google_service.dart';
 import 'package:lipread/services/login_service.dart';
 import 'package:lipread/utilities/app_color_scheme.dart';
-import 'package:lipread/utilities/font_type.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -44,7 +41,7 @@ class LoginScreen extends StatelessWidget {
         child: Stack(
           children: [
             Positioned(
-              top: -60,
+              top: -40,
               left: 80,
               child: Stack(
                 children: [
