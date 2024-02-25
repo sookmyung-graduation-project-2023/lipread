@@ -6,6 +6,17 @@ enum RoleType { woman, man, oldWoman, oldMan }
 
 enum LearningStateType { beforeRecorded, recorded, corrected, completed }
 
+enum CreateTemplateType { recentSubject, newSubject }
+
+enum CreatingTemplateStepType {
+  selectCreatingMethod,
+  selectRecentSubject,
+  inputSubject,
+  inputFirstRole,
+  inputSecondRole,
+  addWord
+}
+
 enum OfficialCategoryType {
   all,
   restaurant,

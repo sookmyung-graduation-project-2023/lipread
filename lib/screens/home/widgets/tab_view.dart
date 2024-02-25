@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lipread/models/official_template_model.dart';
 import 'package:lipread/models/unofficial_template_model.dart';
+import 'package:lipread/screens/creat_template/create_template_screen.dart';
 import 'package:lipread/screens/home/widgets/filter_button.dart';
 import 'package:lipread/screens/template_description/template_description_screen.dart';
 import 'package:lipread/services/template_service.dart';
@@ -164,7 +165,11 @@ class _TabViewState extends State<TabView> with SingleTickerProviderStateMixin {
                                 Row(
                                   children: [
                                     IconButton(
-                                      onPressed: () {},
+                                      onPressed: () => Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const CreateTemplateScreen())),
                                       icon: Icon(
                                         Icons.add_circle_outline,
                                         color: AppColor.grayScale.g700,

@@ -1,9 +1,17 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
+
+import 'package:lipread/screens/creat_template/create_template_screen.dart';
+import 'package:lipread/screens/home/home_screen.dart';
 import 'package:lipread/screens/login/login_screen.dart';
 import 'package:lipread/utilities/app_color_scheme.dart';
 import 'package:lipread/utilities/font_type.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await initializeDateFormatting();
   runApp(const MyApp());
 }
 
@@ -22,16 +30,65 @@ class MyApp extends StatelessWidget {
         appBarTheme: appBarTheme,
         textButtonTheme: textButtonTheme,
         textTheme: textTheme,
-        bottomSheetTheme: bottomSheetThemeData,
+        bottomSheetTheme: bottomSheetTheme,
+        inputDecorationTheme: inputDecorationTheme,
       ),
       home: const LoginScreen(),
     );
   }
 }
 
-const bottomSheetThemeData = BottomSheetThemeData(
+const bottomSheetTheme = BottomSheetThemeData(
   backgroundColor: Colors.white,
   surfaceTintColor: Colors.transparent,
+);
+
+var inputDecorationTheme = InputDecorationTheme(
+  contentPadding: const EdgeInsets.symmetric(
+    vertical: 20,
+    horizontal: 24,
+  ),
+  hintStyle: TextStyle(
+    fontSize: 16,
+    fontFamily: FontType.pretendard.name,
+    fontVariations: const [FontVariation('wght', 400)],
+    color: AppColor.grayScale.g300,
+    height: 1.55,
+  ),
+  counterStyle: TextStyle(
+    fontSize: 14,
+    fontFamily: FontType.pretendard.name,
+    fontVariations: const [FontVariation('wght', 500)],
+    color: AppColor.grayScale.g500,
+  ),
+  errorStyle: TextStyle(
+    fontSize: 14,
+    fontFamily: FontType.pretendard.name,
+    fontVariations: const [FontVariation('wght', 600)],
+    color: AppColor.orangeColor,
+    height: 1.55,
+  ),
+  enabledBorder: OutlineInputBorder(
+    borderRadius: BorderRadius.circular(12),
+    borderSide: BorderSide(
+      color: AppColor.grayScale.g300,
+      width: 1.0,
+    ),
+  ),
+  errorBorder: OutlineInputBorder(
+    borderRadius: BorderRadius.circular(12),
+    borderSide: const BorderSide(
+      color: AppColor.orangeColor,
+      width: 1.0,
+    ),
+  ),
+  focusedBorder: OutlineInputBorder(
+    borderRadius: BorderRadius.circular(12),
+    borderSide: BorderSide(
+      color: AppColor.grayScale.g300,
+      width: 1.5,
+    ),
+  ),
 );
 
 var appBarTheme = AppBarTheme(
