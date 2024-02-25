@@ -32,7 +32,8 @@ class _LearningScreenState extends State<LearningScreen> {
   late VideoPlayerController _controller;
   late Future<List<MessageModel>> _messages;
 
-  String videoPath = "https://dyxryua47v6ay.cloudfront.net/a1.mp4";
+  String videoPath =
+      "https://dyxryua47v6ay.cloudfront.net/woman_facial_dubbing_add_audio.mp4";
 
   @override
   void initState() {
@@ -139,6 +140,8 @@ class _LearningScreenState extends State<LearningScreen> {
                                       text: messages[index].text,
                                       role: messages[index].role,
                                       videoUrl: messages[index].videoUrl,
+                                      messageCheck:
+                                          messages[index].messageCheck,
                                       learningStateType:
                                           LearningStateType.completed,
                                     );
@@ -149,6 +152,7 @@ class _LearningScreenState extends State<LearningScreen> {
                                     role: messages[index].role,
                                     videoUrl: messages[index].videoUrl,
                                     learningStateType: _learningStateType,
+                                    messageCheck: messages[index].messageCheck,
                                     onPressedRerecord: () {
                                       setState(() {
                                         _recognizedWords = '';
@@ -162,9 +166,6 @@ class _LearningScreenState extends State<LearningScreen> {
                                               .checkMessageWith(
                                                   _recognizedWords,
                                                   messages[index].text);
-                                      debugPrint(messages[index]
-                                          .messageCheck!
-                                          .toString());
 
                                       setState(() {
                                         _learningStateType =

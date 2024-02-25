@@ -33,6 +33,19 @@ enum OfficialCategoryType {
   academy
 }
 
+MessageCodeType getMessageCodeWith(int number) {
+  switch (number) {
+    case 1:
+      return MessageCodeType.answer;
+    case 0:
+      return MessageCodeType.correct;
+    case -1:
+      return MessageCodeType.wrong;
+    default:
+      throw Error();
+  }
+}
+
 extension OfficialCategoryTypeExtension on OfficialCategoryType {
   String get value {
     switch (this) {

@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:lipread/models/message_check_model.dart';
 import 'package:lipread/utilities/app_color_scheme.dart';
 import 'package:lipread/utilities/font_type.dart';
 import 'package:dotted_line/dotted_line.dart';
@@ -12,22 +13,77 @@ class MessageCard extends StatelessWidget {
   final String text;
   final String videoUrl;
   final LearningStateType learningStateType;
+  final List<MessageCheckModel>? messageCheck;
 
   final void Function()? onPressedRerecord;
   final void Function()? onPressedCheck;
   final void Function()? onPressedComplete;
 
-  const MessageCard({
+  MessageCard({
     super.key,
     required this.id,
     required this.role,
     required this.text,
     required this.videoUrl,
-    this.learningStateType = LearningStateType.beforeRecorded,
+    required this.learningStateType,
     this.onPressedRerecord,
     this.onPressedCheck,
     this.onPressedComplete,
+    this.messageCheck,
   });
+
+  List<Widget> getMessageCheckedTexts() {
+    List<Widget> listOfWidgets = [];
+    if (messageCheck == null) {
+      return listOfWidgets;
+    }
+    for (var check in messageCheck!) {
+      if (check.code == MessageCodeType.wrong) {
+        listOfWidgets.add(Text(
+          check.text,
+          style: wrongTextStyle,
+        ));
+      } else if (check.code == MessageCodeType.answer) {
+        listOfWidgets.add(Text(
+          check.text,
+          style: answerTextStyle,
+        ));
+      } else if (check.code == MessageCodeType.correct) {
+        listOfWidgets.add(Text(
+          check.text,
+          style: correctTextStyle,
+        ));
+      }
+    }
+
+    return listOfWidgets;
+  }
+
+  var wrongTextStyle = TextStyle(
+    fontSize: 16,
+    fontFamily: FontType.pretendard.name,
+    fontVariations: const [FontVariation('wght', 500)],
+    color: AppColor.orangeColor,
+    height: 1.55,
+    decoration: TextDecoration.lineThrough,
+    decorationColor: AppColor.orangeColor,
+  );
+
+  var correctTextStyle = TextStyle(
+    fontSize: 16,
+    fontFamily: FontType.pretendard.name,
+    fontVariations: const [FontVariation('wght', 500)],
+    color: AppColor.grayScale.g800,
+    height: 1.55,
+  );
+
+  var answerTextStyle = TextStyle(
+    fontSize: 16,
+    fontFamily: FontType.pretendard.name,
+    fontVariations: const [FontVariation('wght', 500)],
+    color: AppColor.primaryColor,
+    height: 1.55,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -108,10 +164,19 @@ class MessageCard extends StatelessWidget {
                     const SizedBox(
                       height: 4,
                     ),
-                    Text(
-                      text,
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
+                    learningStateType == LearningStateType.corrected ||
+                            learningStateType == LearningStateType.completed
+                        ? Wrap(
+                            spacing: 0,
+                            runSpacing: 0,
+                            direction: Axis.horizontal,
+                            alignment: WrapAlignment.start,
+                            children: getMessageCheckedTexts(),
+                          )
+                        : Text(
+                            text,
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
                     DottedLine(
                       lineLength: double.infinity,
                       lineThickness: 1,

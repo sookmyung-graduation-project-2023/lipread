@@ -76,7 +76,7 @@ class LearningService {
       if (body["data"] != null) {
         for (var messageCheck in body["data"]['check']) {
           messageCheckInstances.add(MessageCheckModel(
-            code: MessageCodeType.answer,
+            code: getMessageCodeWith(messageCheck[0]),
             text: messageCheck[1],
           ));
         }
