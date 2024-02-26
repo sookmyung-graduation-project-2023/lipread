@@ -1,4 +1,4 @@
-import 'package:lipread/models/message_check_model.dart';
+import 'package:lipread/models/message/message_check_model.dart';
 
 class MessageModel {
   final String id;

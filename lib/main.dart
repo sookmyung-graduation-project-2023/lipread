@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 import 'package:lipread/screens/creat_template/create_template_screen.dart';
+import 'package:lipread/screens/history/history_screen.dart';
 import 'package:lipread/screens/home/home_screen.dart';
+import 'package:lipread/screens/learning_static/learning_static_screen.dart';
 import 'package:lipread/screens/login/login_screen.dart';
 import 'package:lipread/utilities/app_color_scheme.dart';
 import 'package:lipread/utilities/font_type.dart';
@@ -33,7 +35,7 @@ class MyApp extends StatelessWidget {
         bottomSheetTheme: bottomSheetTheme,
         inputDecorationTheme: inputDecorationTheme,
       ),
-      home: const LoginScreen(),
+      home: const HistoryScreen(),
     );
   }
 }
@@ -197,3 +199,31 @@ var textTheme = TextTheme(
     height: 1,
   ),
 );
+
+extension SentenceCheckedStyles on TextTheme {
+  TextStyle get wrongWord => TextStyle(
+        fontSize: 16,
+        fontFamily: FontType.pretendard.name,
+        fontVariations: const [FontVariation('wght', 500)],
+        color: AppColor.orangeColor,
+        height: 1.55,
+        decoration: TextDecoration.lineThrough,
+        decorationColor: AppColor.orangeColor,
+      );
+
+  TextStyle get correctWord => TextStyle(
+        fontSize: 16,
+        fontFamily: FontType.pretendard.name,
+        fontVariations: const [FontVariation('wght', 500)],
+        color: AppColor.grayScale.g800,
+        height: 1.55,
+      );
+
+  TextStyle get answerWord => TextStyle(
+        fontSize: 16,
+        fontFamily: FontType.pretendard.name,
+        fontVariations: const [FontVariation('wght', 500)],
+        color: AppColor.primaryColor,
+        height: 1.55,
+      );
+}

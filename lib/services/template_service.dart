@@ -4,9 +4,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-import 'package:lipread/models/official_template_model.dart';
-import 'package:lipread/models/template_model.dart';
-import 'package:lipread/models/unofficial_template_model.dart';
+import 'package:lipread/models/template/official_template_model.dart';
+import 'package:lipread/models/template/template_model.dart';
+import 'package:lipread/models/template/unofficial_template_model.dart';
 import 'package:lipread/services/api.dart';
 import 'package:lipread/services/token_service.dart';
 import 'package:lipread/utilities/variables.dart';

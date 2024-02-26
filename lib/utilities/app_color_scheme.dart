@@ -7,6 +7,11 @@ class AppColor {
   static const Color primaryLightColor = Color(0xffF4F9FF);
   static const Color orangeColor = Color(0xffFF7C47);
   static final GrayScale grayScale = GrayScale();
+
+  static const Color pinkColor = Color(0xffFDA2FF);
+  static const Color yellowColor = Color(0xffFFED46);
+  static const Color greenColor = Color(0xffAFF678);
+  static const Color cyanColor = Color(0xff4FE6CB);
 }
 
 class GrayScale {

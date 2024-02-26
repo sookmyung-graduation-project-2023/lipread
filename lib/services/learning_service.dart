@@ -3,8 +3,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:lipread/models/message_check_model.dart';
-import 'package:lipread/models/message_model.dart';
+import 'package:lipread/models/learning_static_model.dart';
+import 'package:lipread/models/message/message_check_model.dart';
+import 'package:lipread/models/message/message_model.dart';
 import 'package:lipread/services/api.dart';
 import 'package:lipread/services/token_service.dart';
 import 'package:lipread/utilities/variables.dart';
@@ -14,6 +15,7 @@ class LearningService {
   static const String roleplay = 'roleplay';
   static const String chatList = 'chatList';
   static const String checkChat = 'checkChat';
+  static const String learningRecord = 'learningRecord';
 
   static Future<List<MessageModel>> getMessagesBy(String id) async {
     List<MessageModel> messagesInstances = [];
@@ -82,6 +84,29 @@ class LearningService {
         }
       }
       return messageCheckInstances;
+    }
+    throw Error();
+  }
+
+  static Future<LearningStaticModel> getLearningStaticWith(String id) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String accessToken = prefs.getString('accessToken')!;
+
+    Map<String, String> headers = {
+      HttpHeaders.authorizationHeader: "Bearer $accessToken",
+    };
+
+    final url = Uri.https(API.baseURL, '$learningRecord/$id');
+    final response = await http.get(url, headers: headers);
+    if (response.statusCode == 401) {
+      await TokenService.refreshAccessToken();
+      getMessagesBy(id);
+    } else if (response.statusCode == 200) {
+      final Map<String, dynamic> body =
+          jsonDecode(utf8.decode(response.bodyBytes));
+      if (body["data"] != null) {
+        return LearningStaticModel.fromJson(body["data"]);
+      }
     }
     throw Error();
   }

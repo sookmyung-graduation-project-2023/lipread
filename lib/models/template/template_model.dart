@@ -1,4 +1,4 @@
-import 'package:lipread/models/learning_static_model.dart';
+import 'package:lipread/models/template/template_learning_static_model.dart';
 import 'package:lipread/models/role_model.dart';
 import 'package:lipread/utilities/variables.dart';
 
@@ -11,7 +11,7 @@ class TemplateModel {
   final RoleModel secondRole;
   OfficialCategoryType? officialCategory;
   String? originalTemplateName;
-  LearningStaticModel? learningStatics;
+  TemplateLearningStaticModel? learningStatics;
 
   TemplateModel.fromJson(Map<String, dynamic> json)
       : id = json["roleplayID"],
@@ -33,6 +33,6 @@ class TemplateModel {
             : null,
         originalTemplateName = json["parentTitle"],
         learningStatics = json.containsKey('study')
-            ? LearningStaticModel.fromJson(json["study"])
+            ? TemplateLearningStaticModel.fromJson(json["study"])
             : null;
 }

@@ -2,7 +2,8 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:lipread/models/history_day_model.dart';
+import 'package:lipread/components/static_widget.dart';
+import 'package:lipread/models/history/history_day_model.dart';
 import 'package:lipread/utilities/app_color_scheme.dart';
 import 'package:lipread/utilities/font_type.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -15,21 +16,20 @@ class HistoryScreen extends StatefulWidget {
 }
 
 class _HistoryScreenState extends State<HistoryScreen> {
-  DateTime? _selectedDay;
+  DateTime _selectedDay = DateTime(
+    DateTime.now().year,
+    DateTime.now().month,
+    DateTime.now().day,
+  );
   DateTime _focusedDay = DateTime.now();
+/*
+  List<Event> _getHistoryForDay(DateTime day) {
+  return events[day] ?? [];
+}*/
 
-  List<HistoryDayModel> list = [
-    HistoryDayModel(
-      id: 'id',
-      emoji: '☕',
-      title: 'title',
-    ),
-    HistoryDayModel(
-      id: 'id',
-      emoji: '☕',
-      title: 'title',
-    ),
-  ];
+  String _getFormattedSelectedDay(DateTime day) {
+    return '${day.year}년 ${day.month}월 ${day.day}일';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +68,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   ),
                   Expanded(
                     child: StaticWidget(
-                      title: '총 연습한 문장',
+                      title: '총 학습한 시간',
                       value: '24',
                     ),
                   ),
@@ -103,45 +103,32 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 onPageChanged: (focusedDay) {
                   _focusedDay = focusedDay;
                 },
+                eventLoader: (day) {
+                  if (day.day % 2 == 0) {
+                    return [];
+                  } else {
+                    return [];
+                  }
+                },
                 calendarBuilders: CalendarBuilders(
                   markerBuilder: (context, day, events) {
                     if (events.isNotEmpty) {
                       List iconEvents = events;
-                      return ListView.builder(
+                      return ListView.separated(
                         shrinkWrap: true,
                         scrollDirection: Axis.horizontal,
                         itemCount: events.length,
                         itemBuilder: (context, index) {
-                          Map key = iconEvents[index];
-                          if (key['iconIndex'] == 1) {
-                            return Container(
-                              margin: const EdgeInsets.only(top: 40),
-                              child: const Icon(
-                                size: 20,
-                                Icons.pets_outlined,
-                                color: Colors.purpleAccent,
-                              ),
-                            );
-                          } else if (key['iconIndex'] == 2) {
-                            return Container(
-                              margin: const EdgeInsets.only(top: 40),
-                              child: const Icon(
-                                size: 20,
-                                Icons.rice_bowl_outlined,
-                                color: Colors.teal,
-                              ),
-                            );
-                          } else if (key['iconIndex'] == 3) {
-                            return Container(
-                              margin: const EdgeInsets.only(top: 40),
-                              child: const Icon(
-                                size: 20,
-                                Icons.water_drop_outlined,
-                                color: Colors.redAccent,
-                              ),
-                            );
-                          }
-                          return null;
+                          // HistorysOfDayModel historyDay = iconEvents[index];
+                          return const Text(
+                            '3',
+                            style: TextStyle(fontSize: 12),
+                          );
+                        },
+                        separatorBuilder: (BuildContext context, int index) {
+                          return const SizedBox(
+                            width: 2,
+                          );
                         },
                       );
                     }
@@ -216,76 +203,69 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     color: AppColor.primaryLightColor,
                     height: 1,
                   ),
+                  disabledTextStyle: TextStyle(
+                    fontSize: 14,
+                    fontFamily: FontType.pretendard.name,
+                    fontVariations: const [FontVariation('wght', 600)],
+                    color: AppColor.grayScale.g300,
+                    height: 1,
+                  ),
+                  outsideDaysVisible: false,
                   canMarkersOverflow: false,
                   markersAutoAligned: true,
-                  markerSize: 10.0,
-                  markerSizeScale: 10.0,
-                  markersAnchor: 0.7,
-                  markerMargin: const EdgeInsets.symmetric(horizontal: 0.3),
                   markersAlignment: Alignment.bottomCenter,
                   markersMaxCount: 4,
-                  markersOffset: const PositionedOffset(),
-                  markerDecoration: const BoxDecoration(
-                    color: Colors.black,
-                    shape: BoxShape.circle,
-                  ),
                 ),
-              )
+              ),
+              const SizedBox(
+                height: 32,
+              ),
+              Text(
+                "${_getFormattedSelectedDay(_selectedDay)} 학습 기록",
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
+              const SizedBox(
+                height: 12,
+              ),
+              ListView.separated(
+                  shrinkWrap: true,
+                  physics: const ClampingScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    return Container(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 20,
+                        horizontal: 24,
+                      ),
+                      decoration: BoxDecoration(
+                        borderRadius: const BorderRadius.all(
+                          Radius.circular(12),
+                        ),
+                        border: Border.all(
+                          width: 1,
+                          color: AppColor.grayScale.g200,
+                        ),
+                      ),
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('향수 구매하기'),
+                          Text('24:00:00'),
+                        ],
+                      ),
+                    );
+                  },
+                  separatorBuilder: (context, index) {
+                    return const SizedBox(
+                      height: 12,
+                    );
+                  },
+                  itemCount: 10),
+              const SizedBox(
+                height: 44,
+              ),
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class StaticWidget extends StatelessWidget {
-  final String title;
-  final String value;
-
-  const StaticWidget({
-    super.key,
-    required this.title,
-    required this.value,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        vertical: 24,
-        horizontal: 24,
-      ),
-      decoration: BoxDecoration(
-        borderRadius: const BorderRadius.all(
-          Radius.circular(12),
-        ),
-        border: Border.all(
-          width: 1,
-          color: AppColor.grayScale.g200,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text(
-            title,
-            style: Theme.of(context).textTheme.titleSmall,
-          ),
-          const SizedBox(
-            height: 12,
-          ),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 16,
-              fontFamily: FontType.pretendard.name,
-              fontVariations: const [FontVariation('wght', 700)],
-              color: AppColor.primaryColor,
-              height: 1,
-            ),
-          ),
-        ],
       ),
     );
   }

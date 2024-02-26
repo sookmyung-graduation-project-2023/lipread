@@ -3,10 +3,10 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:lipread/models/history_learning_static_model.dart';
-import 'package:lipread/models/history_month_model.dart';
-import 'package:lipread/models/message_check_model.dart';
-import 'package:lipread/models/message_model.dart';
+import 'package:lipread/models/history/history_day_model.dart';
+import 'package:lipread/models/history/history_learning_static_model.dart';
+import 'package:lipread/models/message/message_check_model.dart';
+import 'package:lipread/models/message/message_model.dart';
 import 'package:lipread/services/api.dart';
 import 'package:lipread/services/token_service.dart';
 import 'package:lipread/utilities/variables.dart';
@@ -15,8 +15,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 class HistoryService {
   static const String user = 'user';
   static const String learningData = 'learningData';
-
-  static Future<HistoryLearningStaticModel> getHistoryLearningStatic() async {
+/*
+  static Future<List<HistorysOfDayModel>> getHistoryLearningStatic() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String accessToken = prefs.getString('accessToken')!;
 
@@ -37,5 +37,5 @@ class HistoryService {
       }
     }
     throw Error();
-  }
+  }*/
 }

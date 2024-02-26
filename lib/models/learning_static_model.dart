@@ -1,19 +1,23 @@
-class LearningStaticModel {
-  final int totalLearningTimeInMilliseconds;
-  final int totalLearningCount;
-  final double correctAnswerRatio;
-  final String mostUncorrectedSentence;
+import 'package:lipread/models/wrong_sentence_model.dart';
 
-  LearningStaticModel({
-    required this.totalLearningTimeInMilliseconds,
-    required this.totalLearningCount,
-    required this.correctAnswerRatio,
-    required this.mostUncorrectedSentence,
-  });
+class LearningStaticModel {
+  final String id;
+  final String emoji;
+  final String title;
+  final int totalLearningTimeInMilliseconds;
+  final double correctRate;
+  late List<WrongSetenceModel> wrongSetences;
 
   LearningStaticModel.fromJson(Map<String, dynamic> json)
-      : totalLearningTimeInMilliseconds = json["totatlTime"],
-        totalLearningCount = json["learnCnt"],
-        correctAnswerRatio = json["correctRate"].toDouble(),
-        mostUncorrectedSentence = json["sentence"];
+      : id = json["recordID"],
+        emoji = json["emoji"],
+        title = json["title"],
+        totalLearningTimeInMilliseconds = json["study"]["totatlTime"],
+        correctRate = json["study"]["correctRate"] {
+    List<WrongSetenceModel> list = [];
+    for (var item in json["study"]["sentenceList"]) {
+      list.add(WrongSetenceModel.fromJson(item));
+    }
+    wrongSetences = list;
+  }
 }

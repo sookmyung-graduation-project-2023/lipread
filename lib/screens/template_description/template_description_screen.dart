@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lipread/models/template_model.dart';
+import 'package:lipread/models/template/template_model.dart';
 import 'package:lipread/screens/learning/learning_screen.dart';
 import 'package:lipread/screens/learning/widgets/message_card.dart';
 import 'package:lipread/services/template_service.dart';

@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:avatar_glow/avatar_glow.dart';
 import 'package:flutter/material.dart';
+
 import 'package:lipread/utilities/variables.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:speech_to_text/speech_recognition_result.dart';
-import 'package:lipread/models/message_model.dart';
+import 'package:lipread/models/message/message_model.dart';
 import 'package:lipread/screens/learning/widgets/controls_overlay.dart';
 import 'package:lipread/services/learning_service.dart';
 import 'package:lipread/utilities/app_color_scheme.dart';
@@ -23,17 +26,23 @@ class LearningScreen extends StatefulWidget {
 }
 
 class _LearningScreenState extends State<LearningScreen> {
+  int _seconds = 0;
   int _currentLearningMessageIndex = 0;
-  LearningStateType _learningStateType = LearningStateType.beforeRecorded;
   bool _speechEnabled = false;
   String _recognizedWords = '';
 
+  LearningStateType _learningStateType = LearningStateType.beforeRecorded;
+
+  late Timer _timer;
   late stt.SpeechToText _speechToText;
   late VideoPlayerController _controller;
-  late Future<List<MessageModel>> _messages;
+  VideoPlayerController videoPlayerController =
+      VideoPlayerController.networkUrl(Uri.parse(''));
 
-  String videoPath =
-      "https://dyxryua47v6ay.cloudfront.net/woman_facial_dubbing_add_audio.mp4";
+  late ValueNotifier<String> videoFuture;
+
+  late String videoPath;
+  late Future<List<MessageModel>> _messages;
 
   @override
   void initState() {
@@ -51,18 +60,29 @@ class _LearningScreenState extends State<LearningScreen> {
     });
 
     _controller.initialize().then((_) => setState(() {}));
-    _controller.play();
   }
 
   @override
   void dispose() {
-    super.dispose();
     _controller.dispose();
+    super.dispose();
   }
 
   void _initSpeech() async {
     _speechEnabled = await _speechToText.initialize();
     setState(() {});
+  }
+
+  Future<void> play(String url) async {
+    if (url.isEmpty) return;
+    if (videoPlayerController.value.isInitialized) {
+      await videoPlayerController.dispose();
+    }
+    videoPlayerController = VideoPlayerController.networkUrl(Uri.parse(url));
+
+    return videoPlayerController.initialize().then((value) {
+      videoPlayerController.play();
+    });
   }
 
   void _startListening() async {
@@ -86,6 +106,17 @@ class _LearningScreenState extends State<LearningScreen> {
     });
   }
 
+  void _startTimer() {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      _seconds++;
+      debugPrint(_seconds.toString());
+    });
+  }
+
+  void _stopTimer() {
+    _timer.cancel();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -107,18 +138,32 @@ class _LearningScreenState extends State<LearningScreen> {
               List<MessageModel> messages = snapshot.data!;
               return Column(
                 children: [
-                  AspectRatio(
-                    aspectRatio: _controller.value.aspectRatio,
-                    child: Stack(
-                      alignment: Alignment.bottomCenter,
-                      children: <Widget>[
-                        VideoPlayer(_controller),
-                        ControlsOverlay(controller: _controller),
-                        VideoProgressIndicator(_controller,
-                            allowScrubbing: true),
-                      ],
-                    ),
-                  ),
+                  /*
+                  ValueListenableBuilder(
+                      valueListenable: videoFuture,
+                      builder: (context, value, child) {
+                        return AspectRatio(
+                          aspectRatio: _controller.value.aspectRatio,
+                          child: value == null
+                              ? const Text('no value')
+                              : FutureBuilder(
+                                  future: value,
+                                  builder: (context, snapshot) {
+                                    return Stack(
+                                      alignment: Alignment.bottomCenter,
+                                      children: <Widget>[
+                                        VideoPlayer(_controller),
+                                        ControlsOverlay(
+                                            controller: _controller),
+                                        VideoProgressIndicator(
+                                          _controller,
+                                          allowScrubbing: true,
+                                        ),
+                                      ],
+                                    );
+                                  }),
+                        );
+                      }),*/
                   Expanded(
                       child: Stack(
                     alignment: Alignment.topCenter,
