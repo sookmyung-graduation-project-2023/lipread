@@ -2,6 +2,8 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
+import 'package:lipread/components/role_avatar.dart';
+import 'package:lipread/components/role_avatar_button.dart';
 import 'package:lipread/utilities/app_color_scheme.dart';
 import 'package:lipread/utilities/font_type.dart';
 import 'package:lipread/utilities/variables.dart';
@@ -18,6 +20,8 @@ class _CreateTemplateScreenState extends State<CreateTemplateScreen> {
       CreatingTemplateStepType.selectCreatingMethod;
 
   CreateTemplateType? selectedTemplateType;
+
+  List<String> addWords = [];
 
   double indicatorValue = .1;
 
@@ -53,6 +57,9 @@ class _CreateTemplateScreenState extends State<CreateTemplateScreen> {
               _templateStep = CreatingTemplateStepType.addWord;
               indicatorValue = .9;
             } else if (_templateStep == CreatingTemplateStepType.addWord) {
+              _templateStep = CreatingTemplateStepType.inputTitle;
+              indicatorValue = .95;
+            } else if (_templateStep == CreatingTemplateStepType.inputTitle) {
               debugPrint('완료');
             }
           });
@@ -91,7 +98,9 @@ class _CreateTemplateScreenState extends State<CreateTemplateScreen> {
                 if (_templateStep == CreatingTemplateStepType.inputSecondRole)
                   const InputRoleOfTemplate(),
                 if (_templateStep == CreatingTemplateStepType.addWord)
-                  const AddWordOfTemplate(),
+                  AddWordOfTemplate(),
+                if (_templateStep == CreatingTemplateStepType.inputTitle)
+                  const InputTitleOfTemplate(),
               ],
             ),
           ),
@@ -373,15 +382,68 @@ class InputRoleOfTemplate extends StatelessWidget {
             hintText: 'ex. 카페에서 오래 일한 직원이다. 손님에게 맛있는 음식을 잘 추천해준다.',
           ),
         ),
+        const SizedBox(
+          height: 32,
+        ),
+        Text(
+          "역할 이미지 선택하기",
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        const SizedBox(
+          height: 12,
+        ),
+        const Row(
+          children: [
+            Expanded(
+              child: RoleAvatarButton(
+                label: '남성',
+                isSelected: false,
+                roleType: RoleType.man,
+              ),
+            ),
+            SizedBox(
+              width: 12,
+            ),
+            Expanded(
+              child: RoleAvatarButton(
+                label: '여성',
+                isSelected: false,
+                roleType: RoleType.woman,
+              ),
+            ),
+            SizedBox(
+              width: 12,
+            ),
+            Expanded(
+              child: RoleAvatarButton(
+                label: '중년 남성',
+                isSelected: true,
+                roleType: RoleType.oldMan,
+              ),
+            ),
+            SizedBox(
+              width: 12,
+            ),
+            Expanded(
+              child: RoleAvatarButton(
+                label: '중년 여성',
+                isSelected: false,
+                roleType: RoleType.oldWoman,
+              ),
+            ),
+          ],
+        )
       ],
     );
   }
 }
 
 class AddWordOfTemplate extends StatelessWidget {
-  const AddWordOfTemplate({
+  AddWordOfTemplate({
     super.key,
   });
+
+  List<String> words = ['ajvls', 'awfes'];
 
   @override
   Widget build(BuildContext context) {
@@ -414,6 +476,103 @@ class AddWordOfTemplate extends StatelessWidget {
         ),
         const SizedBox(
           height: 12,
+        ),
+        Wrap(
+          spacing: 8,
+          runSpacing: 4,
+          children: [
+            for (var word in words)
+              WordTag(
+                word: word,
+                onPressed: () {},
+              ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class WordTag extends StatelessWidget {
+  final String word;
+  final void Function() onPressed;
+  const WordTag({
+    super.key,
+    required this.word,
+    required this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return TextButton(
+      onPressed: onPressed,
+      style: TextButton.styleFrom(
+        minimumSize: const Size(0, 0),
+        padding: const EdgeInsets.symmetric(
+          vertical: 12,
+          horizontal: 18,
+        ),
+        backgroundColor: Colors.transparent,
+        foregroundColor: AppColor.primaryColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(100),
+          side: const BorderSide(
+            width: 1,
+            color: AppColor.primaryColor,
+          ),
+        ),
+        textStyle: TextStyle(
+          fontFamily: FontType.pretendard.name,
+          fontSize: 16,
+          height: 1,
+          fontVariations: const [
+            FontVariation('wght', 500),
+          ],
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(word),
+          const SizedBox(
+            width: 8,
+          ),
+          const Icon(
+            Icons.cancel_outlined,
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class InputTitleOfTemplate extends StatelessWidget {
+  const InputTitleOfTemplate({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const SizedBox(
+          height: 24,
+        ),
+        Text(
+          "마지막으로\n제목을 지어주세요.",
+          style: Theme.of(context).textTheme.bodyLarge,
+        ),
+        const SizedBox(
+          height: 12,
+        ),
+        TextField(
+          maxLines: 1,
+          maxLength: 15,
+          style: Theme.of(context).textTheme.bodyMedium,
+          decoration: const InputDecoration(
+            hintText: 'ex. 카페에서 음료 주문하기',
+          ),
         ),
       ],
     );

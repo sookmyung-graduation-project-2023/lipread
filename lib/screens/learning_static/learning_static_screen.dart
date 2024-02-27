@@ -4,6 +4,7 @@ import 'package:lipread/components/static_widget.dart';
 import 'package:lipread/models/learning_static_model.dart';
 import 'package:lipread/screens/learning_static/components/wrong_sentence.dart';
 import 'package:lipread/services/learning_service.dart';
+import 'package:lipread/utilities/functions.dart';
 
 class LearningStaticScreen extends StatelessWidget {
   final String id;
@@ -80,9 +81,9 @@ class LearningStaticScreen extends StatelessWidget {
                             Expanded(
                               child: StaticWidget(
                                 title: '학습 시간',
-                                value: learningStatic
-                                    .totalLearningTimeInMilliseconds
-                                    .toString(),
+                                value: formatTotalLearningTimeWith(
+                                    learningStatic
+                                        .totalLearningTimeInMilliseconds),
                               ),
                             ),
                           ],
@@ -97,16 +98,20 @@ class LearningStaticScreen extends StatelessWidget {
                         const SizedBox(
                           height: 12,
                         ),
-                        /*
-                  틀린 문장이 없을 때도 해야함
-                  learningStatic.wrongSetences
-                  
-                  const WrongSetenceCard(
-                  wrongSetence: ,
-                  ),
-                  const WrongSetenceCard(
-                    
-                  ),*/
+                        ListView.separated(
+                            shrinkWrap: true,
+                            physics: const ClampingScrollPhysics(),
+                            itemBuilder: (context, index) {
+                              return WrongSetenceCard(
+                                  wrongSetence:
+                                      learningStatic.wrongSetences[index]);
+                            },
+                            separatorBuilder: (context, index) {
+                              return const SizedBox(
+                                height: 12,
+                              );
+                            },
+                            itemCount: learningStatic.wrongSetences.length),
                       ],
                     ),
                   ),

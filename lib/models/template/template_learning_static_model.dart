@@ -12,7 +12,7 @@ class TemplateLearningStaticModel {
   });
 
   TemplateLearningStaticModel.fromJson(Map<String, dynamic> json)
-      : totalLearningTimeInMilliseconds = json["totatlTime"],
+      : totalLearningTimeInMilliseconds = json["totalTime"],
         totalLearningCount = json["learnCnt"],
         correctAnswerRatio = json["correctRate"].toDouble(),
         mostUncorrectedSentence = json["sentence"];

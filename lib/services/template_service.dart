@@ -92,6 +92,7 @@ class TemplateService {
   }
 
   static Future<TemplateModel> getTemplateDescriptionBy(String id) async {
+    debugPrint('id:: $id');
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String accessToken = prefs.getString('accessToken')!;
 

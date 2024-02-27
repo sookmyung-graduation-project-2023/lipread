@@ -35,7 +35,7 @@ class MyApp extends StatelessWidget {
         bottomSheetTheme: bottomSheetTheme,
         inputDecorationTheme: inputDecorationTheme,
       ),
-      home: const HistoryScreen(),
+      home: const LoginScreen(),
     );
   }
 }

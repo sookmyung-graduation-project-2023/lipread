@@ -8,6 +8,6 @@ class HistoryLearningStaticModel {
   });
 
   HistoryLearningStaticModel.fromJson(Map<String, dynamic> json)
-      : totalLearningTimeInMilliseconds = json["totatlTime"],
+      : totalLearningTimeInMilliseconds = json["totalTime"],
         totalLearningSentenceCount = json["sentenceCnt"];
 }

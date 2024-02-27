@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:lipread/utilities/app_color_scheme.dart';
 import 'package:lipread/utilities/font_type.dart';
+import 'package:lipread/utilities/functions.dart';
 
 import 'percentage_circular_indicator.dart';
 
@@ -19,16 +20,6 @@ class LearningStatics extends StatelessWidget {
     required this.correctAnswerRatio,
     required this.mostUncorrectedSentence,
   });
-
-  String _formatTotalLearningTimeWith(int milliseconds) {
-    final DateTime dateTime = _convertMillisecondsToDateTime(milliseconds);
-    return '${dateTime.hour}:${dateTime.minute}:${dateTime.second}';
-  }
-
-  DateTime _convertMillisecondsToDateTime(int milliseconds) {
-    final DateTime dateTime = DateTime.fromMicrosecondsSinceEpoch(milliseconds);
-    return dateTime;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -101,7 +92,7 @@ class LearningStatics extends StatelessWidget {
                             height: 12,
                           ),
                           Text(
-                            _formatTotalLearningTimeWith(
+                            formatTotalLearningTimeWith(
                                 totalLearningTimeInMilliseconds),
                             style: TextStyle(
                               fontSize: 16,

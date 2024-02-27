@@ -14,7 +14,8 @@ enum CreatingTemplateStepType {
   inputSubject,
   inputFirstRole,
   inputSecondRole,
-  addWord
+  addWord,
+  inputTitle,
 }
 
 enum OfficialCategoryType {
@@ -33,6 +34,21 @@ enum OfficialCategoryType {
   academy
 }
 
+RoleType getRoleTypeWith(String role) {
+  switch (role) {
+    case 'man':
+      return RoleType.man;
+    case 'woman':
+      return RoleType.woman;
+    case 'oldMan':
+      return RoleType.oldMan;
+    case 'oldWoman':
+      return RoleType.oldWoman;
+    default:
+      throw Error();
+  }
+}
+
 MessageCodeType getMessageCodeWith(int number) {
   switch (number) {
     case 1:
@@ -43,6 +59,23 @@ MessageCodeType getMessageCodeWith(int number) {
       return MessageCodeType.wrong;
     default:
       throw Error();
+  }
+}
+
+extension RoleTypeExtension on RoleType {
+  String get value {
+    switch (this) {
+      case RoleType.man:
+        return '남성';
+      case RoleType.woman:
+        return '여성';
+      case RoleType.oldMan:
+        return '중년 남성';
+      case RoleType.oldWoman:
+        return '중년 여성';
+      default:
+        return 'none';
+    }
   }
 }
 

@@ -4,10 +4,18 @@ import 'package:lipread/utilities/variables.dart';
 class WrongSetenceModel {
   final RoleType type;
   final String name;
-  final List<MessageCheckModel> sentence;
+  late List<MessageCheckModel> sentence;
 
   WrongSetenceModel.fromJson(Map<String, dynamic> json)
-      : type = json["roleType"],
-        name = json["role"],
-        sentence = json["check"];
+      : type = getRoleTypeWith(json["roleType"]),
+        name = json["role"] {
+    final List<MessageCheckModel> list = [];
+    for (var check in json["check"]) {
+      list.add(MessageCheckModel(
+        code: getMessageCodeWith(check[0]),
+        text: check[1],
+      ));
+    }
+    sentence = list;
+  }
 }

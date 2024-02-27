@@ -36,8 +36,6 @@ class _LearningScreenState extends State<LearningScreen> {
   late Timer _timer;
   late stt.SpeechToText _speechToText;
   late VideoPlayerController _controller;
-  VideoPlayerController videoPlayerController =
-      VideoPlayerController.networkUrl(Uri.parse(''));
 
   late ValueNotifier<String> videoFuture;
 
@@ -52,7 +50,8 @@ class _LearningScreenState extends State<LearningScreen> {
     _speechToText = stt.SpeechToText();
 
     _initSpeech();
-
+    videoPath =
+        'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
     _controller = VideoPlayerController.networkUrl(Uri.parse(videoPath));
 
     _controller.addListener(() {
@@ -75,13 +74,13 @@ class _LearningScreenState extends State<LearningScreen> {
 
   Future<void> play(String url) async {
     if (url.isEmpty) return;
-    if (videoPlayerController.value.isInitialized) {
-      await videoPlayerController.dispose();
+    if (_controller.value.isInitialized) {
+      await _controller.dispose();
     }
-    videoPlayerController = VideoPlayerController.networkUrl(Uri.parse(url));
+    _controller = VideoPlayerController.networkUrl(Uri.parse(videoPath));
 
-    return videoPlayerController.initialize().then((value) {
-      videoPlayerController.play();
+    return _controller.initialize().then((value) {
+      _controller.play();
     });
   }
 

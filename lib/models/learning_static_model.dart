@@ -12,7 +12,7 @@ class LearningStaticModel {
       : id = json["recordID"],
         emoji = json["emoji"],
         title = json["title"],
-        totalLearningTimeInMilliseconds = json["study"]["totatlTime"],
+        totalLearningTimeInMilliseconds = json["study"]["totalTime"],
         correctRate = json["study"]["correctRate"] {
     List<WrongSetenceModel> list = [];
     for (var item in json["study"]["sentenceList"]) {
