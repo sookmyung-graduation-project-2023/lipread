@@ -142,6 +142,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           TableCalendar(
+                            availableGestures: AvailableGestures.none,
                             firstDay: DateTime.utc(2010, 10, 16),
                             lastDay: DateTime.now(),
                             locale: 'ko_KR',
@@ -183,12 +184,18 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                   return ListView.separated(
                                     shrinkWrap: true,
                                     scrollDirection: Axis.horizontal,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
                                     itemCount: events.length,
                                     itemBuilder: (context, index) {
                                       // HistorysOfDayModel historyDay = iconEvents[index];
-                                      return Text(
-                                        events[index].emoji,
-                                        style: const TextStyle(fontSize: 10),
+                                      return SizedBox(
+                                        width: 6,
+                                        height: 6,
+                                        child: Text(
+                                          events[index].emoji,
+                                          style: const TextStyle(fontSize: 10),
+                                        ),
                                       );
                                     },
                                     separatorBuilder:
@@ -292,7 +299,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                               outsideDaysVisible: false,
                               canMarkersOverflow: false,
                               markersAutoAligned: true,
-                              markersAlignment: Alignment.bottomCenter,
+                              markersAlignment: Alignment.bottomLeft,
                               markersMaxCount: 4,
                             ),
                           ),
