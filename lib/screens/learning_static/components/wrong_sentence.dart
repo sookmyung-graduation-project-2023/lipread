@@ -51,7 +51,7 @@ class WrongSetenceCard extends StatelessWidget {
                 const SizedBox(
                   height: 4,
                 ),
-                SentenceChecked(messageCheck: wrongSetence.sentence),
+                SentenceChecked(messageCheck: wrongSetence.checked),
               ],
             ),
           ),

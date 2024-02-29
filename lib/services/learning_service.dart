@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:lipread/models/learning_static_model.dart';
 import 'package:lipread/models/message/message_check_model.dart';
+import 'package:lipread/models/message/message_checks_model.dart';
 import 'package:lipread/models/message/message_model.dart';
 import 'package:lipread/services/api.dart';
 import 'package:lipread/services/token_service.dart';
@@ -45,8 +46,9 @@ class LearningService {
     throw Error();
   }
 
-  static Future<List<MessageCheckModel>> checkMessageWith(
+  static Future<MessageChecksModel> checkMessageWith(
       String input, String answer) async {
+    bool isSentenceCorrect = true;
     List<MessageCheckModel> messageCheckInstances = [];
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -77,13 +79,19 @@ class LearningService {
 
       if (body["data"] != null) {
         for (var messageCheck in body["data"]['check']) {
+          final [code, text] = messageCheck;
+          final MessageCodeType codeType = getMessageCodeWith(code);
+          if (codeType != MessageCodeType.correct) isSentenceCorrect = false;
           messageCheckInstances.add(MessageCheckModel(
-            code: getMessageCodeWith(messageCheck[0]),
-            text: messageCheck[1],
+            code: codeType,
+            text: text,
           ));
         }
       }
-      return messageCheckInstances;
+      return MessageChecksModel(
+        isCorrect: isSentenceCorrect,
+        messageCheck: messageCheckInstances,
+      );
     }
     throw Error();
   }
@@ -106,6 +114,38 @@ class LearningService {
           jsonDecode(utf8.decode(response.bodyBytes));
       if (body["data"] != null) {
         return LearningStaticModel.fromJson(body["data"]);
+      }
+    }
+    throw Error();
+  }
+
+  static Future<String> saveLearningStatic(
+      String id, LearningStaticModel learningResult) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String accessToken = prefs.getString('accessToken')!;
+
+    Map<String, String> headers = {
+      HttpHeaders.authorizationHeader: "Bearer $accessToken",
+    };
+
+    var body = json.encode(learningResult.toJson());
+
+    final url = Uri.https(API.baseURL, '$learningRecord/$id');
+    final response = await http.post(
+      url,
+      headers: headers,
+      body: body,
+    );
+
+    if (response.statusCode == 401) {
+      await TokenService.refreshAccessToken();
+      saveLearningStatic(id, learningResult);
+    } else if (response.statusCode == 200) {
+      final Map<String, dynamic> body =
+          jsonDecode(utf8.decode(response.bodyBytes));
+
+      if (body["data"] != null) {
+        return body["data"]["recordID"];
       }
     }
     throw Error();

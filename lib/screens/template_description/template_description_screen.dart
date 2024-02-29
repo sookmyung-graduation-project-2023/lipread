@@ -29,9 +29,12 @@ class _TemplateDescriptionScreenState extends State<TemplateDescriptionScreen> {
     _templateDescription = TemplateService.getTemplateDescriptionBy(widget.id);
   }
 
-  void _routeToTrainingScreen(BuildContext context, String id) {
+  void _routeToTrainingScreen(
+      BuildContext context, String id, String title, String emoji) {
     Navigator.push(
-        context, MaterialPageRoute(builder: (context) => LearningScreen(id)));
+        context,
+        MaterialPageRoute(
+            builder: (context) => LearningScreen(id, title, emoji)));
   }
 
   @override
@@ -157,7 +160,7 @@ class _TemplateDescriptionScreenState extends State<TemplateDescriptionScreen> {
                             RoleCard(
                               name: templateDescription.firstRole.name,
                               explain: templateDescription.firstRole.explain,
-                              type: templateDescription.firstRole.type,
+                              role: templateDescription.firstRole.type,
                             ),
                             const SizedBox(
                               height: 12,
@@ -165,7 +168,7 @@ class _TemplateDescriptionScreenState extends State<TemplateDescriptionScreen> {
                             RoleCard(
                               name: templateDescription.secondRole.name,
                               explain: templateDescription.secondRole.explain,
-                              type: templateDescription.secondRole.type,
+                              role: templateDescription.secondRole.type,
                             ),
                           ],
                         ),
@@ -216,7 +219,11 @@ class _TemplateDescriptionScreenState extends State<TemplateDescriptionScreen> {
                             ),
                             TextButton(
                               onPressed: () {
-                                _routeToTrainingScreen(context, widget.id);
+                                _routeToTrainingScreen(
+                                    context,
+                                    widget.id,
+                                    templateDescription.title,
+                                    templateDescription.emoji);
                               },
                               child: const Text('학습 시작하기'),
                             ),

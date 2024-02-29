@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lipread/components/role_avatar.dart';
 
 import 'package:lipread/utilities/app_color_scheme.dart';
 import 'package:lipread/utilities/variables.dart';
@@ -6,13 +7,13 @@ import 'package:lipread/utilities/variables.dart';
 class RoleCard extends StatelessWidget {
   final String name;
   final String explain;
-  final RoleType type;
+  final RoleType role;
 
   const RoleCard({
     super.key,
     required this.name,
     required this.explain,
-    required this.type,
+    required this.role,
   });
 
   @override
@@ -34,7 +35,7 @@ class RoleCard extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('🎢'),
+          RoleAvatar(roleType: role),
           const SizedBox(
             width: 20,
           ),

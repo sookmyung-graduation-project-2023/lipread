@@ -62,6 +62,21 @@ MessageCodeType getMessageCodeWith(int number) {
   }
 }
 
+extension MessageCodeExtension on MessageCodeType {
+  int get value {
+    switch (this) {
+      case MessageCodeType.answer:
+        return 1;
+      case MessageCodeType.correct:
+        return 0;
+      case MessageCodeType.wrong:
+        return -1;
+      default:
+        throw Error();
+    }
+  }
+}
+
 extension RoleTypeExtension on RoleType {
   String get value {
     switch (this) {

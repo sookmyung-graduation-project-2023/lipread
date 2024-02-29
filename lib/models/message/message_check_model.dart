@@ -8,4 +8,8 @@ class MessageCheckModel {
     required this.code,
     required this.text,
   });
+
+  List<dynamic> toList() {
+    return [code.value, text];
+  }
 }

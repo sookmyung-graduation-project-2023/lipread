@@ -17,6 +17,7 @@ class TemplateService {
   static const String roleplay = 'roleplay';
   static const String official = 'official';
   static const String personal = 'personal';
+  static const String newTopic = 'newTopic';
 
   static Future<List<OfficialTemplateModel>> getOfficialTemplates(
       {OfficialCategoryType category = OfficialCategoryType.all}) async {
@@ -115,5 +116,42 @@ class TemplateService {
       }
     }
     throw Error();
+  }
+
+  static Stream<String> createNewTemplate() async* {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String accessToken = prefs.getString('accessToken')!;
+
+    Map<String, String> headers = {
+      HttpHeaders.authorizationHeader: "Bearer $accessToken",
+    };
+
+    var body = json.encode({
+      "title": "카페에서 아이스 아메리카노 주문하기",
+      "description": "카페에서 손님이 음료를 주문한다.",
+      "role1": "카페 직원",
+      "role1Desc": "카운터에서 카페 주문하는 손님을 응대한다.",
+      "role1Type": "woman",
+      "role2": "손님",
+      "role2Desc": "카페에서 음료를 주문하려고 한다. ",
+      "role2Type": "man",
+      "mustWords": ["아이스아메리카노", "바닐라라떼"]
+    });
+
+    final url = Uri.https(API.createNewTopicBaseURL, '$roleplay/$newTopic');
+    final response = await http.post(
+      url,
+      headers: headers,
+      body: body,
+    );
+
+    if (response.statusCode == 401) {
+      await TokenService.refreshAccessToken();
+      createNewTemplate();
+    } else if (response.statusCode == 201) {
+      final String body = utf8.decode(response.bodyBytes);
+      yield body;
+      debugPrint(body);
+    }
   }
 }

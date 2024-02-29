@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:lipread/providers/token_provider.dart';
 
 import 'package:lipread/screens/creat_template/create_template_screen.dart';
 import 'package:lipread/screens/history/history_screen.dart';
@@ -10,11 +11,14 @@ import 'package:lipread/screens/learning_static/learning_static_screen.dart';
 import 'package:lipread/screens/login/login_screen.dart';
 import 'package:lipread/utilities/app_color_scheme.dart';
 import 'package:lipread/utilities/font_type.dart';
+import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting();
-  runApp(const MyApp());
+  runApp(MultiProvider(
+      providers: [ChangeNotifierProvider(create: (_) => TokenProvider())],
+      child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {

@@ -4,13 +4,12 @@ import 'package:lipread/utilities/app_color_scheme.dart';
 import 'package:lipread/utilities/variables.dart';
 
 String formatTotalLearningTimeWith(int milliseconds) {
-  final Duration duration = _convertMillisecondsToDuration(milliseconds);
-  return '${duration.inHours}:${duration.inMinutes}:${duration.inSeconds}';
-}
+  Duration duration = Duration(milliseconds: milliseconds);
+  int hours = duration.inHours;
+  int minutes = duration.inMinutes.remainder(60);
+  int remainingSeconds = duration.inSeconds.remainder(60);
 
-Duration _convertMillisecondsToDuration(int milliseconds) {
-  final Duration duration = Duration(microseconds: milliseconds);
-  return duration;
+  return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}';
 }
 
 Color getBackgroundColorWith(RoleType roleType) {

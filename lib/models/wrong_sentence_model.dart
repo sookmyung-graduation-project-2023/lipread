@@ -4,7 +4,15 @@ import 'package:lipread/utilities/variables.dart';
 class WrongSetenceModel {
   final RoleType type;
   final String name;
-  late List<MessageCheckModel> sentence;
+  late List<MessageCheckModel> checked;
+  String? sentence;
+
+  WrongSetenceModel({
+    required this.type,
+    required this.name,
+    required this.sentence,
+    required this.checked,
+  });
 
   WrongSetenceModel.fromJson(Map<String, dynamic> json)
       : type = getRoleTypeWith(json["roleType"]),
@@ -16,6 +24,15 @@ class WrongSetenceModel {
         text: check[1],
       ));
     }
-    sentence = list;
+    checked = list;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = {};
+    data['roleType'] = type.name;
+    data['role'] = name;
+    data['sentence'] = sentence;
+    data['check'] = [...checked.map((check) => check.toList())];
+    return data;
   }
 }

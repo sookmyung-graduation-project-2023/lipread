@@ -114,7 +114,7 @@ class _TabViewState extends State<TabView> with SingleTickerProviderStateMixin {
                                       crossAxisCount: 2,
                                       mainAxisSpacing: 12,
                                       crossAxisSpacing: 12,
-                                      childAspectRatio: .7,
+                                      childAspectRatio: .8,
                                     ),
                                     itemBuilder: (context, index) {
                                       return GestureDetector(

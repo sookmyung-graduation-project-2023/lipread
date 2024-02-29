@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:avatar_glow/avatar_glow.dart';
 import 'package:flutter/material.dart';
+import 'package:lipread/models/learning_static_model.dart';
+import 'package:lipread/screens/learning_static/learning_static_screen.dart';
 
 import 'package:lipread/utilities/variables.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
@@ -15,9 +17,13 @@ import 'widgets/message_card.dart';
 
 class LearningScreen extends StatefulWidget {
   final String id;
+  final String title;
+  final String emoji;
 
   const LearningScreen(
-    this.id, {
+    this.id,
+    this.title,
+    this.emoji, {
     super.key,
   });
 
@@ -28,18 +34,17 @@ class LearningScreen extends StatefulWidget {
 class _LearningScreenState extends State<LearningScreen> {
   int _seconds = 0;
   int _currentLearningMessageIndex = 0;
-  bool _speechEnabled = false;
-  String _recognizedWords = '';
+  int _learnedSentenceCount = 0;
+  final List<MessageModel> _wrongSentences = [];
+  String _recognizedWords = "";
 
   LearningStateType _learningStateType = LearningStateType.beforeRecorded;
 
   late Timer _timer;
   late stt.SpeechToText _speechToText;
   late VideoPlayerController _controller;
+  String videoPath = "";
 
-  late ValueNotifier<String> videoFuture;
-
-  late String videoPath;
   late Future<List<MessageModel>> _messages;
 
   @override
@@ -50,8 +55,8 @@ class _LearningScreenState extends State<LearningScreen> {
     _speechToText = stt.SpeechToText();
 
     _initSpeech();
-    videoPath =
-        'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
+
+    videoPath = 'https://dyxryua47v6ay.cloudfront.net/a1.mp4';
     _controller = VideoPlayerController.networkUrl(Uri.parse(videoPath));
 
     _controller.addListener(() {
@@ -59,16 +64,18 @@ class _LearningScreenState extends State<LearningScreen> {
     });
 
     _controller.initialize().then((_) => setState(() {}));
+    _startTimer();
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    _stopTimer();
     super.dispose();
   }
 
   void _initSpeech() async {
-    _speechEnabled = await _speechToText.initialize();
+    await _speechToText.initialize();
     setState(() {});
   }
 
@@ -114,6 +121,40 @@ class _LearningScreenState extends State<LearningScreen> {
 
   void _stopTimer() {
     _timer.cancel();
+    debugPrint('stop timer');
+    debugPrint(_seconds.toString());
+  }
+
+  Future<String> _saveStudy() async {
+    LearningStaticModel result = LearningStaticModel(
+      learningSentenceCount: _learnedSentenceCount,
+      emoji: widget.emoji,
+      title: widget.title,
+      totalLearningTimeInMilliseconds: _seconds * 1000,
+      correctRate: 1 - (_wrongSentences.length / _learnedSentenceCount),
+      wrongSetences: [..._wrongSentences.map((e) => e.getWrongSetence())],
+    );
+
+    return await LearningService.saveLearningStatic(widget.id, result);
+  }
+
+  void _finishStudy() async {
+    final id = await _saveStudy();
+    Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => LearningStaticScreen(id),
+        ));
+  }
+
+  void _setVideo(String url) {
+    _controller = VideoPlayerController.networkUrl(Uri.parse(url));
+
+    _controller.addListener(() {
+      setState(() {});
+    });
+
+    _controller.initialize().then((_) => setState(() {}));
   }
 
   @override
@@ -122,7 +163,8 @@ class _LearningScreenState extends State<LearningScreen> {
       appBar: AppBar(
         title: const Text('학습하기'),
         actions: [
-          IconButton(onPressed: () {}, icon: const Icon(Icons.check_circle)),
+          IconButton(
+              onPressed: _finishStudy, icon: const Icon(Icons.check_circle)),
         ],
       ),
       body: FutureBuilder(
@@ -137,32 +179,20 @@ class _LearningScreenState extends State<LearningScreen> {
               List<MessageModel> messages = snapshot.data!;
               return Column(
                 children: [
-                  /*
-                  ValueListenableBuilder(
-                      valueListenable: videoFuture,
-                      builder: (context, value, child) {
-                        return AspectRatio(
-                          aspectRatio: _controller.value.aspectRatio,
-                          child: value == null
-                              ? const Text('no value')
-                              : FutureBuilder(
-                                  future: value,
-                                  builder: (context, snapshot) {
-                                    return Stack(
-                                      alignment: Alignment.bottomCenter,
-                                      children: <Widget>[
-                                        VideoPlayer(_controller),
-                                        ControlsOverlay(
-                                            controller: _controller),
-                                        VideoProgressIndicator(
-                                          _controller,
-                                          allowScrubbing: true,
-                                        ),
-                                      ],
-                                    );
-                                  }),
-                        );
-                      }),*/
+                  AspectRatio(
+                    aspectRatio: 5 / 3,
+                    child: Stack(
+                      alignment: Alignment.bottomCenter,
+                      children: <Widget>[
+                        VideoPlayer(_controller),
+                        ControlsOverlay(controller: _controller),
+                        VideoProgressIndicator(
+                          _controller,
+                          allowScrubbing: true,
+                        ),
+                      ],
+                    ),
+                  ),
                   Expanded(
                       child: Stack(
                     alignment: Alignment.topCenter,
@@ -183,9 +213,11 @@ class _LearningScreenState extends State<LearningScreen> {
                                       id: index,
                                       text: messages[index].text,
                                       role: messages[index].role,
+                                      roleType: messages[index].roleType,
                                       videoUrl: messages[index].videoUrl,
-                                      messageCheck:
-                                          messages[index].messageCheck,
+                                      messageCheck: messages[index]
+                                          .checkInformation
+                                          ?.messageCheck,
                                       learningStateType:
                                           LearningStateType.completed,
                                     );
@@ -194,9 +226,12 @@ class _LearningScreenState extends State<LearningScreen> {
                                     id: index,
                                     text: _recognizedWords,
                                     role: messages[index].role,
+                                    roleType: messages[index].roleType,
                                     videoUrl: messages[index].videoUrl,
                                     learningStateType: _learningStateType,
-                                    messageCheck: messages[index].messageCheck,
+                                    messageCheck: messages[index]
+                                        .checkInformation
+                                        ?.messageCheck,
                                     onPressedRerecord: () {
                                       setState(() {
                                         _recognizedWords = '';
@@ -205,7 +240,7 @@ class _LearningScreenState extends State<LearningScreen> {
                                       });
                                     },
                                     onPressedCheck: () async {
-                                      messages[index].messageCheck =
+                                      messages[index].checkInformation =
                                           await LearningService
                                               .checkMessageWith(
                                                   _recognizedWords,
@@ -218,10 +253,28 @@ class _LearningScreenState extends State<LearningScreen> {
                                     },
                                     onPressedComplete: () {
                                       setState(() {
-                                        _learningStateType =
-                                            LearningStateType.beforeRecorded;
                                         _recognizedWords = '';
-                                        _currentLearningMessageIndex++;
+                                        if (!messages[
+                                                _currentLearningMessageIndex]
+                                            .checkInformation!
+                                            .isCorrect) {
+                                          _wrongSentences.add(messages[
+                                              _currentLearningMessageIndex]);
+                                        }
+                                        _learnedSentenceCount++;
+                                        if (messages.length - 1 >
+                                            _currentLearningMessageIndex) {
+                                          _currentLearningMessageIndex++;
+                                          _setVideo(messages[
+                                                  _currentLearningMessageIndex]
+                                              .videoUrl);
+                                          _learningStateType =
+                                              LearningStateType.beforeRecorded;
+                                        } else {
+                                          _learningStateType =
+                                              LearningStateType.completed;
+                                          _stopTimer();
+                                        }
                                       });
                                     },
                                   );

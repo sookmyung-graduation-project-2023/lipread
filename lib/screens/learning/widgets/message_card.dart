@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:lipread/components/role_avatar.dart';
 import 'package:lipread/components/sentence_checked.dart';
 import 'package:lipread/models/message/message_check_model.dart';
 import 'package:lipread/utilities/app_color_scheme.dart';
@@ -10,6 +11,7 @@ import 'package:lipread/utilities/variables.dart';
 
 class MessageCard extends StatelessWidget {
   final int id;
+  final RoleType roleType;
   final String role;
   final String text;
   final String videoUrl;
@@ -23,6 +25,7 @@ class MessageCard extends StatelessWidget {
   const MessageCard({
     super.key,
     required this.id,
+    required this.roleType,
     required this.role,
     required this.text,
     required this.videoUrl,
@@ -97,7 +100,7 @@ class MessageCard extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('🎢'),
+              RoleAvatar(roleType: roleType),
               const SizedBox(
                 width: 20,
               ),
