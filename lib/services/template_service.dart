@@ -149,9 +149,10 @@ class TemplateService {
       await TokenService.refreshAccessToken();
       createNewTemplate();
     } else if (response.statusCode == 201) {
-      final String body = utf8.decode(response.bodyBytes);
-      yield body;
-      debugPrint(body);
+      final String utf8Decoded =
+          utf8.decode(response.bodyBytes).replaceAll('data: ', '');
+      final Map<String, dynamic> body = jsonDecode(utf8Decoded);
+      yield body.toString();
     }
   }
 }
