@@ -1,38 +1,46 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:lipread/services/template_service.dart';
 import 'dart:developer' as developer;
+import 'package:http/http.dart' as http;
 
-class TestScreen extends StatelessWidget {
+class TestScreen extends StatefulWidget {
   const TestScreen({super.key});
+  @override
+  State<TestScreen> createState() => _TestScreenState();
+}
+
+class _TestScreenState extends State<TestScreen> {
+  String text = 'test';
+  @override
+  void initState() {
+    super.initState();
+    subscribe();
+  }
+
+  subscribe() async {
+    developer.log("Subscribing..");
+    try {
+      TemplateService.createNewTemplate().asStream().listen((streamedResponse) {
+        developer.log(
+            "Received streamedResponse.statusCode:${streamedResponse.statusCode}");
+        streamedResponse.stream.listen((data) {
+          setState(() {
+            text = utf8.decode(data);
+          });
+          developer.log("Received data:${utf8.decode(data)}");
+        });
+      });
+    } catch (e) {
+      developer.log("Caught $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: StreamBuilder(
-          stream: TemplateService.createNewTemplate(),
-          builder: (context, snapshot) {
-            switch (snapshot.connectionState) {
-              case ConnectionState.waiting:
-                return Text(snapshot.data ?? "노 데이터");
-              case ConnectionState.none:
-                return Text(snapshot.data ?? "노 데이터");
-              case ConnectionState.active:
-                return Text(snapshot.data ?? "노 데이터");
-              case ConnectionState.done:
-                if (snapshot.hasError) {
-                  developer.log(snapshot.error.toString());
-                  throw Error();
-                }
-                if (!snapshot.hasData) {
-                  developer.log("no data");
-                  return const Text("no data");
-                } else {
-                  return Text(snapshot.data ?? "노 데이터");
-                }
-            }
-          },
-        ),
+        child: Text(text),
       ),
     );
   }

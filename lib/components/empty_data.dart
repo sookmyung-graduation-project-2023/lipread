@@ -17,12 +17,13 @@ class EmptyData extends StatelessWidget {
       child: Center(
         child: Text(
           text,
+          textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 16,
             fontFamily: FontType.pretendard.name,
             fontVariations: const [FontVariation('wght', 500)],
             color: AppColor.grayScale.g500,
-            height: 1,
+            height: 1.55,
           ),
         ),
       ),

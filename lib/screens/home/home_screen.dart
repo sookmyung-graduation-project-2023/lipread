@@ -3,8 +3,8 @@ import 'package:lipread/screens/account/account_screen.dart';
 import 'package:lipread/screens/history/history_screen.dart';
 import 'package:lipread/screens/notification/notification_screen.dart';
 import 'package:lipread/test_screen.dart';
-import 'widgets/home_banner.dart';
-import 'widgets/tab_view.dart';
+import 'components/home_banner.dart';
+import 'components/tab_view.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});

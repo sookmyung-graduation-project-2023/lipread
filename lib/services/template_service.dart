@@ -118,7 +118,7 @@ class TemplateService {
     throw Error();
   }
 
-  static Stream<String> createNewTemplate() async* {
+  static Stream<String> createNewTemplate2() async* {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String accessToken = prefs.getString('accessToken')!;
 
@@ -154,5 +154,46 @@ class TemplateService {
       final Map<String, dynamic> body = jsonDecode(utf8Decoded);
       yield body.toString();
     }
+  }
+
+  static Future<http.StreamedResponse> createNewTemplate() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String accessToken = prefs.getString('accessToken')!;
+
+    http.Client client = http.Client();
+
+    final url = Uri.https(API.createNewTopicBaseURL, '$roleplay/$newTopic');
+
+    var body = json.encode({
+      "title": "카페에서 아이스 아메리카노 주문하기",
+      "description": "카페에서 손님이 음료를 주문한다.",
+      "role1": "카페 직원",
+      "role1Desc": "카운터에서 카페 주문하는 손님을 응대한다.",
+      "role1Type": "woman",
+      "role2": "손님",
+      "role2Desc": "카페에서 음료를 주문하려고 한다. ",
+      "role2Type": "man",
+      "mustWords": ["아이스아메리카노", "바닐라라떼"]
+    });
+
+    var request = http.Request("POST", url);
+
+    request.headers['authorization'] = "Bearer $accessToken";
+    request.headers['accept'] = "text/event-stream";
+
+    request.body = body;
+
+    Future<http.StreamedResponse> response = client.send(request);
+    return response;
+/*
+    if (response.statusCode == 401) {
+      await TokenService.refreshAccessToken();
+      createNewTemplate();
+    } else if (response.statusCode == 201) {
+      final String utf8Decoded =
+          utf8.decode(response.bodyBytes).replaceAll('data: ', '');
+      final Map<String, dynamic> body = jsonDecode(utf8Decoded);
+      yield body.toString();
+    }*/
   }
 }

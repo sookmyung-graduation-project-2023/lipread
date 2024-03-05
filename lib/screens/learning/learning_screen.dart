@@ -9,11 +9,11 @@ import 'package:lipread/utilities/variables.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:lipread/models/message/message_model.dart';
-import 'package:lipread/screens/learning/widgets/controls_overlay.dart';
+import 'package:lipread/screens/learning/components/controls_overlay.dart';
 import 'package:lipread/services/learning_service.dart';
 import 'package:lipread/utilities/app_color_scheme.dart';
 import 'package:video_player/video_player.dart';
-import 'widgets/message_card.dart';
+import 'components/message_card.dart';
 
 class LearningScreen extends StatefulWidget {
   final String id;

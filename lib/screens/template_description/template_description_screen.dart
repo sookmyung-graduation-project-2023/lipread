@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:lipread/models/template/template_model.dart';
 import 'package:lipread/screens/learning/learning_screen.dart';
-import 'package:lipread/screens/learning/widgets/message_card.dart';
+import 'package:lipread/screens/learning/components/message_card.dart';
 import 'package:lipread/services/template_service.dart';
 import 'package:lipread/utilities/app_color_scheme.dart';
 import 'package:lipread/utilities/variables.dart';
-import 'package:lipread/widgets/empty_data.dart';
+import 'package:lipread/components/empty_data.dart';
 
-import 'widgets/learning_statics.dart';
-import 'widgets/role_card.dart';
+import 'components/learning_statics.dart';
+import 'components/role_card.dart';
 
 class TemplateDescriptionScreen extends StatefulWidget {
   final String id;

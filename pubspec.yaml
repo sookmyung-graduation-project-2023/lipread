@@ -23,6 +23,7 @@ dependencies:
   flutter_keyboard_visibility: ^6.0.0
   table_calendar: ^3.1.0
   intl: ^0.19.0
+  sse: ^4.1.4
 
 dev_dependencies:
   flutter_test:
