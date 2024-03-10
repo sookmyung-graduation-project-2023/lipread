@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "907368680143",
+    "project_id": "lipread-1e487",
+    "storage_bucket": "lipread-1e487.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:907368680143:android:40c0514253e398954d45ba",
+        "android_client_info": {
+          "package_name": "com.example.lipread"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDm57jeOXpjLIpt_75cULu1_jDMgCusXak"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

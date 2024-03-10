@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:lipread/models/user_model.dart';
@@ -9,7 +10,7 @@ import 'package:lipread/utilities/app_color_scheme.dart';
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
 
-  Future<void> _signInWithGoogle() async {
+  void _signInWithGoogle() async {
     debugPrint('sign in with Google');
     final googleAccount = await GoogleService.signin();
     debugPrint('googleAccount: $googleAccount');
@@ -26,6 +27,29 @@ class LoginScreen extends StatelessWidget {
       name: googleAccount.displayName ?? 'name',
       email: googleAccount.email,
     );
+  }
+
+  void _requestPermission() async {
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+    NotificationSettings settings = await messaging.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      debugPrint('User granted permission');
+    } else if (settings.authorizationStatus ==
+        AuthorizationStatus.provisional) {
+      debugPrint('User granted provisional permission');
+    } else {
+      debugPrint('no');
+    }
+  }
+
+  void _getToken() async {
+    String? fcmToken = await FirebaseMessaging.instance.getToken();
+    debugPrint(fcmToken);
   }
 
   void _routeToHomeScreen(BuildContext context) {
@@ -98,7 +122,9 @@ class LoginScreen extends StatelessWidget {
                   ),
                   TextButton(
                     onPressed: () async {
-                      await _signInWithGoogle();
+                      _signInWithGoogle();
+                      _requestPermission();
+                      _getToken();
                       _routeToHomeScreen(context);
                     },
                     child: const Text(
