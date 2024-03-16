@@ -27,6 +27,7 @@ dependencies:
   firebase_core: ^2.26.0
   firebase_messaging: ^14.7.18
   firebase_core_platform_interface: ^5.0.0
+  web_socket_channel: ^2.4.0
 
 dev_dependencies:
   flutter_test:

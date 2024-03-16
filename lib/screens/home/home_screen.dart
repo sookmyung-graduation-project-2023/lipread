@@ -44,28 +44,27 @@ class HomeScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: const SingleChildScrollView(
-        physics: ClampingScrollPhysics(),
-        child: Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  SizedBox(
-                    height: 20,
-                  ),
-                  HomeBanner(),
-                  SizedBox(
-                    height: 20,
-                  ),
-                ],
+      body: NestedScrollView(
+        physics: const ClampingScrollPhysics(),
+        headerSliverBuilder: (context, innerBoxIsScrolled) {
+          return [
+            const SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    SizedBox(
+                      height: 20,
+                    ),
+                    HomeBanner(),
+                  ],
+                ),
               ),
-            ),
-            TabView(),
-          ],
-        ),
+            )
+          ];
+        },
+        body: const TabView(),
       ),
     );
   }

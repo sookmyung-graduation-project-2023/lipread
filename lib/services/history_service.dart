@@ -14,7 +14,7 @@ class HistoryService {
   static const String learningData = 'learningData';
   static const String monthlyData = 'monthlyData';
 
-  static Future<HistoryLearningStaticModel> getLearningStatic() async {
+  static Future<HistoryLearningStaticModel?> getLearningStatic() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String accessToken = prefs.getString('accessToken')!;
 

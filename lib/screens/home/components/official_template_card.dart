@@ -16,7 +16,6 @@ class OfficialTemplateCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 140,
       padding: const EdgeInsets.symmetric(
         vertical: 20,
         horizontal: 20,

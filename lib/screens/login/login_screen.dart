@@ -7,8 +7,15 @@ import 'package:lipread/services/google_service.dart';
 import 'package:lipread/services/login_service.dart';
 import 'package:lipread/utilities/app_color_scheme.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  bool _onloginBtnPressed = false;
 
   void _signInWithGoogle() async {
     debugPrint('sign in with Google');
@@ -16,17 +23,23 @@ class LoginScreen extends StatelessWidget {
     debugPrint('googleAccount: $googleAccount');
 
     if (googleAccount != null) {
-      final user = _createUserWith(googleAccount);
+      final user = await _createUserWith(googleAccount);
       await LoginService.saveUser(user);
     }
   }
 
-  UserModel _createUserWith(GoogleSignInAccount googleAccount) {
+  Future<UserModel> _createUserWith(GoogleSignInAccount googleAccount) async {
     return UserModel(
       id: googleAccount.id,
       name: googleAccount.displayName ?? 'name',
       email: googleAccount.email,
+      deviceToken: await _getToken(),
     );
+  }
+
+  Future<String?> _getToken() async {
+    _requestPermission();
+    return await FirebaseMessaging.instance.getToken();
   }
 
   void _requestPermission() async {
@@ -47,14 +60,14 @@ class LoginScreen extends StatelessWidget {
     }
   }
 
-  void _getToken() async {
-    String? fcmToken = await FirebaseMessaging.instance.getToken();
-    debugPrint(fcmToken);
-  }
-
   void _routeToHomeScreen(BuildContext context) {
     Navigator.pushReplacement(
         context, MaterialPageRoute(builder: (context) => const HomeScreen()));
+  }
+
+  void _handleLoginBtnPressed() {
+    _signInWithGoogle();
+    _routeToHomeScreen(context);
   }
 
   @override
@@ -121,12 +134,14 @@ class LoginScreen extends StatelessWidget {
                     height: 60,
                   ),
                   TextButton(
-                    onPressed: () async {
-                      _signInWithGoogle();
-                      _requestPermission();
-                      _getToken();
-                      _routeToHomeScreen(context);
-                    },
+                    onPressed: _onloginBtnPressed
+                        ? null
+                        : () {
+                            setState(() {
+                              _onloginBtnPressed = true;
+                              _handleLoginBtnPressed();
+                            });
+                          },
                     child: const Text(
                       'Google로 시작하기',
                     ),

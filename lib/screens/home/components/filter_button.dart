@@ -50,19 +50,28 @@ class _FilterButtonState extends State<FilterButton>
       onPressed: _showModalBottomSheet,
       style: TextButton.styleFrom(
         minimumSize: const Size(0, 0),
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-        foregroundColor: AppColor.grayScale.g700,
-        backgroundColor: Colors.transparent,
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 14),
+        foregroundColor: selectedCategory == OfficialCategoryType.all
+            ? AppColor.grayScale.g700
+            : AppColor.primaryColor,
+        backgroundColor: selectedCategory == OfficialCategoryType.all
+            ? Colors.transparent
+            : AppColor.primaryLightColor,
         shape: RoundedRectangleBorder(
-          side: BorderSide(color: AppColor.grayScale.g300),
+          side: BorderSide(
+            color: selectedCategory == OfficialCategoryType.all
+                ? AppColor.grayScale.g300
+                : AppColor.primaryColor,
+          ),
           borderRadius: BorderRadius.circular(100),
         ),
         textStyle: TextStyle(
           fontFamily: FontType.pretendard.name,
           fontSize: 14,
           height: 1,
-          fontVariations: const [
-            FontVariation('wght', 500),
+          fontVariations: [
+            FontVariation('wght',
+                selectedCategory == OfficialCategoryType.all ? 500 : 600),
           ],
         ),
       ),

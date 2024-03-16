@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:lipread/components/empty_data.dart';
 import 'package:lipread/components/static_widget.dart';
 import 'package:lipread/models/learning_static_model.dart';
 import 'package:lipread/screens/learning_static/components/wrong_sentence.dart';
@@ -98,20 +99,23 @@ class LearningStaticScreen extends StatelessWidget {
                         const SizedBox(
                           height: 12,
                         ),
-                        ListView.separated(
-                            shrinkWrap: true,
-                            physics: const ClampingScrollPhysics(),
-                            itemBuilder: (context, index) {
-                              return WrongSetenceCard(
-                                  wrongSetence:
-                                      learningStatic.wrongSetences[index]);
-                            },
-                            separatorBuilder: (context, index) {
-                              return const SizedBox(
-                                height: 12,
-                              );
-                            },
-                            itemCount: learningStatic.wrongSetences.length),
+                        learningStatic.wrongSetences.isEmpty
+                            ? const EmptyData(
+                                text: "틀린 문장이 없네요.\n모든 문장을 맞추셨군요!")
+                            : ListView.separated(
+                                shrinkWrap: true,
+                                physics: const ClampingScrollPhysics(),
+                                itemBuilder: (context, index) {
+                                  return WrongSetenceCard(
+                                      wrongSetence:
+                                          learningStatic.wrongSetences[index]);
+                                },
+                                separatorBuilder: (context, index) {
+                                  return const SizedBox(
+                                    height: 12,
+                                  );
+                                },
+                                itemCount: learningStatic.wrongSetences.length),
                       ],
                     ),
                   ),

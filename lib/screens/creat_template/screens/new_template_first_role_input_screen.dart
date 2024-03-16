@@ -3,8 +3,11 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:lipread/components/role_avatar_button.dart';
+import 'package:lipread/models/role_model.dart';
+import 'package:lipread/providers/new_template_provider.dart';
 import 'package:lipread/screens/creat_template/screens/new_template_second_role_input_screen.dart';
 import 'package:lipread/utilities/variables.dart';
+import 'package:provider/provider.dart';
 
 import '../components/create_template_progress_indicator.dart';
 
@@ -52,6 +55,15 @@ class _NewTemplateFirstRoleInputScreenState
     return _selectedRoleType != null && role == _selectedRoleType;
   }
 
+  void _handleOnpressedNextBtn() {
+    final RoleModel role = RoleModel(
+        type: _selectedRoleType!,
+        name: _roleNameTextController.text,
+        explain: _roleExplainationTextController.text);
+    context.read<NewTemplateProvider>().firstRole = role;
+    _routeToNextScreen();
+  }
+
   void _routeToNextScreen() {
     Navigator.push(
         context,
@@ -74,7 +86,7 @@ class _NewTemplateFirstRoleInputScreenState
           left: 24,
         ),
         child: TextButton(
-          onPressed: _isBtnAvaliable ? _routeToNextScreen : null,
+          onPressed: _isBtnAvaliable ? _handleOnpressedNextBtn : null,
           child: const Text('다음 단계로'),
         ),
       ),

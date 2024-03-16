@@ -4,17 +4,13 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:lipread/firebase_options.dart';
+import 'package:lipread/providers/new_template_provider.dart';
 import 'package:lipread/providers/token_provider.dart';
-import 'package:lipread/screens/creat_template/screens/learning_word_input_screen.dart';
-import 'package:lipread/screens/creat_template/screens/new_template_topic_input_screen.dart';
 
 import 'package:lipread/screens/login/login_screen.dart';
 import 'package:lipread/utilities/app_color_scheme.dart';
 import 'package:lipread/utilities/font_type.dart';
 import 'package:provider/provider.dart';
-
-import 'screens/creat_template/screens/create_template_screen.dart';
-import 'screens/creat_template/screens/template_title_input_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,7 +18,14 @@ void main() async {
   await initializeDefault();
   runApp(
     MultiProvider(
-      providers: [ChangeNotifierProvider(create: (_) => TokenProvider())],
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => TokenProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => NewTemplateProvider(),
+        )
+      ],
       child: const MyApp(),
     ),
   );

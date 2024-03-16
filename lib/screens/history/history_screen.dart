@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
+import 'package:lipread/components/empty_data.dart';
 import 'package:lipread/components/static_widget.dart';
 import 'package:lipread/models/history/history_day_model.dart';
 import 'package:lipread/models/history/history_learning_static_model.dart';
@@ -29,12 +30,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
     DateTime.now().day,
   );
   DateTime _focusedDay = DateTime.now();
-/*
-  List<Event> _getHistoryForDay(DateTime day) {
-  return events[day] ?? [];
-}*/
 
-  final Future<HistoryLearningStaticModel> _learningStatics =
+  final Future<HistoryLearningStaticModel?> _learningStatics =
       HistoryService.getLearningStatic();
 
   late Future<List<HistorysOfDayModel>> _monthlyHistory;
@@ -116,7 +113,43 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         );
                       }
                     }
-                    return const CircularProgressIndicator();
+                    return Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            height: 120,
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 24,
+                              horizontal: 24,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColor.grayScale.g200,
+                              borderRadius: const BorderRadius.all(
+                                Radius.circular(12),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 12,
+                        ),
+                        Expanded(
+                          child: Container(
+                            height: 120,
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 24,
+                              horizontal: 24,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColor.grayScale.g200,
+                              borderRadius: const BorderRadius.all(
+                                Radius.circular(12),
+                              ),
+                            ),
+                          ),
+                        )
+                      ],
+                    );
                   }),
               const SizedBox(
                 height: 32,
@@ -313,16 +346,69 @@ class _HistoryScreenState extends State<HistoryScreen> {
                           const SizedBox(
                             height: 12,
                           ),
-                          HistoryCard(
-                            histories: _getHistoriesOnSelectedDay(
-                                    historysOfDayList, _selectedDay.day)
-                                .historysOfDay,
-                          ),
+                          _getHistoriesOnSelectedDay(
+                                      historysOfDayList, _selectedDay.day)
+                                  .historysOfDay
+                                  .isEmpty
+                              ? const EmptyData(text: '학습 기록이 없습니다')
+                              : HistoryCard(
+                                  histories: _getHistoriesOnSelectedDay(
+                                          historysOfDayList, _selectedDay.day)
+                                      .historysOfDay,
+                                ),
                         ],
                       );
                     }
                   }
-                  return const CircularProgressIndicator();
+                  return Column(
+                    children: [
+                      Container(
+                        height: 360,
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 24,
+                          horizontal: 24,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColor.grayScale.g200,
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(12),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 32,
+                      ),
+                      Container(
+                        height: 60,
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 24,
+                          horizontal: 24,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColor.grayScale.g200,
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(12),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 12,
+                      ),
+                      Container(
+                        height: 200,
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 24,
+                          horizontal: 24,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColor.grayScale.g200,
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(12),
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
                 },
               ),
               const SizedBox(

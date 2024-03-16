@@ -36,6 +36,7 @@ class StaticWidget extends StatelessWidget {
           Text(
             title,
             style: Theme.of(context).textTheme.titleSmall,
+            textAlign: TextAlign.center,
           ),
           const SizedBox(
             height: 12,

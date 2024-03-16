@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:lipread/models/template/new_template_model.dart';
 
 import 'package:lipread/models/template/official_template_model.dart';
 import 'package:lipread/models/template/template_model.dart';
@@ -11,6 +12,7 @@ import 'package:lipread/services/api.dart';
 import 'package:lipread/services/token_service.dart';
 import 'package:lipread/utilities/variables.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 class TemplateService {
   static const String roleplayList = 'roleplayList';
@@ -92,6 +94,12 @@ class TemplateService {
     throw Error();
   }
 
+  static WebSocketChannel subscribeUnOfficialTemplate() {
+    final wsUrl = Uri.parse(
+        'wss://6ppmb67186.execute-api.ap-northeast-2.amazonaws.com/production/?userID=u12345678');
+    return WebSocketChannel.connect(wsUrl);
+  }
+
   static Future<TemplateModel> getTemplateDescriptionBy(String id) async {
     debugPrint('id:: $id');
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -147,7 +155,7 @@ class TemplateService {
 
     if (response.statusCode == 401) {
       await TokenService.refreshAccessToken();
-      createNewTemplate();
+      createNewTemplate2();
     } else if (response.statusCode == 201) {
       final String utf8Decoded =
           utf8.decode(response.bodyBytes).replaceAll('data: ', '');
@@ -156,7 +164,8 @@ class TemplateService {
     }
   }
 
-  static Future<http.StreamedResponse> createNewTemplate() async {
+  static Future<http.StreamedResponse> createNewTemplate(
+      NewTemplateModel template) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String accessToken = prefs.getString('accessToken')!;
 
@@ -164,17 +173,7 @@ class TemplateService {
 
     final url = Uri.https(API.createNewTopicBaseURL, '$roleplay/$newTopic');
 
-    var body = json.encode({
-      "title": "카페에서 아이스 아메리카노 주문하기",
-      "description": "카페에서 손님이 음료를 주문한다.",
-      "role1": "카페 직원",
-      "role1Desc": "카운터에서 카페 주문하는 손님을 응대한다.",
-      "role1Type": "woman",
-      "role2": "손님",
-      "role2Desc": "카페에서 음료를 주문하려고 한다. ",
-      "role2Type": "man",
-      "mustWords": ["아이스아메리카노", "바닐라라떼"]
-    });
+    var body = json.encode(template.toJson());
 
     var request = http.Request("POST", url);
 

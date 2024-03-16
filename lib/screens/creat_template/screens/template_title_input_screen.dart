@@ -4,11 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:lipread/components/role_avatar.dart';
 import 'package:lipread/components/role_avatar_button.dart';
+import 'package:lipread/providers/new_template_provider.dart';
 import 'package:lipread/screens/creat_template/screens/new_template_first_role_input_screen.dart';
 import 'package:lipread/screens/home/home_screen.dart';
+import 'package:lipread/services/template_service.dart';
+import 'package:lipread/test_screen.dart';
 import 'package:lipread/utilities/app_color_scheme.dart';
 import 'package:lipread/utilities/font_type.dart';
 import 'package:lipread/utilities/variables.dart';
+import 'package:provider/provider.dart';
 
 import '../components/create_template_progress_indicator.dart';
 
@@ -45,11 +49,16 @@ class _TemplateTitleInputScreenState extends State<TemplateTitleInputScreen> {
     });
   }
 
+  void _handleCompletetBtn() {
+    context.read<NewTemplateProvider>().title = _titleTextController.text;
+    _routeToNextScreen();
+  }
+
   void _routeToNextScreen() {
     Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => const HomeScreen(),
+          builder: (context) => const TestScreen(),
         ));
   }
 
@@ -67,8 +76,8 @@ class _TemplateTitleInputScreenState extends State<TemplateTitleInputScreen> {
           left: 24,
         ),
         child: TextButton(
-          onPressed: _isBtnAvaliable ? _routeToNextScreen : null,
-          child: const Text('다음 단계로'),
+          onPressed: _isBtnAvaliable ? _handleCompletetBtn : null,
+          child: const Text('영상 생성하기'),
         ),
       ),
       body: Column(

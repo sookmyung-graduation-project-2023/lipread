@@ -4,9 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:lipread/components/empty_data.dart';
 import 'package:lipread/components/role_avatar_button.dart';
+import 'package:lipread/providers/new_template_provider.dart';
 import 'package:lipread/screens/creat_template/screens/new_template_second_role_input_screen.dart';
 import 'package:lipread/screens/creat_template/screens/template_title_input_screen.dart';
+import 'package:lipread/utilities/app_color_scheme.dart';
+import 'package:lipread/utilities/font_type.dart';
 import 'package:lipread/utilities/variables.dart';
+import 'package:provider/provider.dart';
 
 import '../components/create_template_progress_indicator.dart';
 import '../components/word_tag.dart';
@@ -24,7 +28,13 @@ class LearningWordInputScreen extends StatefulWidget {
 class _LearningWordInputScreenState extends State<LearningWordInputScreen> {
   final _wordTextController = TextEditingController();
 
+  bool _isBtnAvaliable = false;
   List<String> words = [];
+
+  void _handleOnpressedNextBtn() {
+    context.read<NewTemplateProvider>().words = words;
+    _routeToNextScreen();
+  }
 
   void _routeToNextScreen() {
     Navigator.push(
@@ -39,6 +49,28 @@ class _LearningWordInputScreenState extends State<LearningWordInputScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('단어 입력하기'),
+        actions: [
+          TextButton(
+            onPressed: _handleOnpressedNextBtn,
+            style: TextButton.styleFrom(
+              minimumSize: const Size(0, 0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16,
+              ),
+              backgroundColor: Colors.transparent,
+              foregroundColor: AppColor.primaryColor,
+              textStyle: TextStyle(
+                fontFamily: FontType.pretendard.name,
+                fontSize: 16,
+                height: 1,
+                fontVariations: const [
+                  FontVariation('wght', 600),
+                ],
+              ),
+            ),
+            child: const Text('건너뛰기'),
+          )
+        ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Padding(
@@ -48,7 +80,7 @@ class _LearningWordInputScreenState extends State<LearningWordInputScreen> {
           left: 24,
         ),
         child: TextButton(
-          onPressed: _routeToNextScreen,
+          onPressed: _isBtnAvaliable ? _handleOnpressedNextBtn : null,
           child: const Text('다음 단계로'),
         ),
       ),
@@ -86,6 +118,7 @@ class _LearningWordInputScreenState extends State<LearningWordInputScreen> {
                           if (value.isNotEmpty && !words.contains(value)) {
                             words.add(value);
                           }
+                          _isBtnAvaliable = true;
                           _wordTextController.text = "";
                         });
                       },
@@ -120,6 +153,9 @@ class _LearningWordInputScreenState extends State<LearningWordInputScreen> {
                                   onPressed: () {
                                     setState(() {
                                       words.remove(word);
+                                      if (words.isEmpty) {
+                                        _isBtnAvaliable = false;
+                                      }
                                     });
                                   },
                                 ),
