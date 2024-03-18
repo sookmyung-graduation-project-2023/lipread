@@ -77,6 +77,9 @@ class _LearningScreenState extends State<LearningScreen> {
 
   @override
   void dispose() {
+    _controller.removeListener(() {
+      setState(() {});
+    });
     _controller.dispose();
     _stopTimer();
     super.dispose();
@@ -249,6 +252,9 @@ class _LearningScreenState extends State<LearningScreen> {
   }
 
   void _setVideo(String url) {
+    try {
+      _controller.dispose();
+    } catch (e) {}
     _controller = VideoPlayerController.networkUrl(Uri.parse(url));
 
     _controller.addListener(() {

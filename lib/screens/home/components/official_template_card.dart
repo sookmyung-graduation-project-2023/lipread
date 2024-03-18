@@ -30,7 +30,7 @@ class OfficialTemplateCard extends StatelessWidget {
         ),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
@@ -41,6 +41,7 @@ class OfficialTemplateCard extends StatelessWidget {
           ),
           Text(
             emoji,
+            textAlign: TextAlign.end,
             style: const TextStyle(
               fontSize: 52,
             ),
