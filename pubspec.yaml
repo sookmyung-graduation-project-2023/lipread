@@ -28,6 +28,9 @@ dependencies:
   firebase_messaging: ^14.7.18
   firebase_core_platform_interface: ^5.0.0
   web_socket_channel: ^2.4.0
+  fluttertoast: ^8.2.4
+  double_back_to_close: ^2.0.0
+  permission_handler: ^11.3.0
 
 dev_dependencies:
   flutter_test:
@@ -46,4 +49,4 @@ flutter:
         - asset: fonts/PretendardVariable.ttf
     - family: bronova
       fonts:
-        - asset: fonts/Bronova-Bold.ttf
+        - asset: fonts/BronovaBold.ttf

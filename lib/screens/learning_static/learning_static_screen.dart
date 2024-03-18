@@ -2,18 +2,19 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lipread/components/empty_data.dart';
 import 'package:lipread/components/static_widget.dart';
+import 'package:lipread/models/arguments/learning_static_screen_arguments.dart';
 import 'package:lipread/models/learning_static_model.dart';
 import 'package:lipread/screens/learning_static/components/wrong_sentence.dart';
 import 'package:lipread/services/learning_service.dart';
 import 'package:lipread/utilities/functions.dart';
 
 class LearningStaticScreen extends StatelessWidget {
-  final String id;
+  final LearningStaticScreenArguments arguments;
 
-  LearningStaticScreen(this.id, {super.key});
+  LearningStaticScreen(this.arguments, {super.key});
 
   late final Future<LearningStaticModel> _learningStatic =
-      LearningService.getLearningStaticWith(id);
+      LearningService.getLearningStaticWith(arguments.id);
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +74,8 @@ class LearningStaticScreen extends StatelessWidget {
                             Expanded(
                               child: StaticWidget(
                                 title: '정답률',
-                                value: learningStatic.correctRate.toString(),
+                                value:
+                                    '${(learningStatic.correctRate * 100).toInt().toString()}%',
                               ),
                             ),
                             const SizedBox(
@@ -116,6 +118,9 @@ class LearningStaticScreen extends StatelessWidget {
                                   );
                                 },
                                 itemCount: learningStatic.wrongSetences.length),
+                        const SizedBox(
+                          height: 44,
+                        )
                       ],
                     ),
                   ),

@@ -6,9 +6,11 @@ import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:lipread/components/empty_data.dart';
 import 'package:lipread/components/static_widget.dart';
+import 'package:lipread/models/arguments/learning_static_screen_arguments.dart';
 import 'package:lipread/models/history/history_day_model.dart';
 import 'package:lipread/models/history/history_learning_static_model.dart';
 import 'package:lipread/models/history/history_model.dart';
+import 'package:lipread/routes/routing_constants.dart';
 import 'package:lipread/screens/learning_static/learning_static_screen.dart';
 import 'package:lipread/services/history_service.dart';
 import 'package:lipread/utilities/app_color_scheme.dart';
@@ -214,29 +216,35 @@ class _HistoryScreenState extends State<HistoryScreen> {
                               markerBuilder:
                                   (context, day, List<HistoryModel> events) {
                                 if (events.isNotEmpty) {
-                                  return ListView.separated(
-                                    shrinkWrap: true,
-                                    scrollDirection: Axis.horizontal,
-                                    physics:
-                                        const NeverScrollableScrollPhysics(),
-                                    itemCount: events.length,
-                                    itemBuilder: (context, index) {
-                                      // HistorysOfDayModel historyDay = iconEvents[index];
-                                      return SizedBox(
-                                        width: 6,
-                                        height: 6,
-                                        child: Text(
-                                          events[index].emoji,
-                                          style: const TextStyle(fontSize: 10),
-                                        ),
-                                      );
-                                    },
-                                    separatorBuilder:
-                                        (BuildContext context, int index) {
-                                      return const SizedBox(
-                                        width: 1,
-                                      );
-                                    },
+                                  final eventList = events.length >= 4
+                                      ? events.sublist(0, 4)
+                                      : events;
+                                  return Center(
+                                    child: ListView.separated(
+                                      shrinkWrap: true,
+                                      scrollDirection: Axis.horizontal,
+                                      physics:
+                                          const NeverScrollableScrollPhysics(),
+                                      itemCount: eventList.length,
+                                      itemBuilder: (context, index) {
+                                        // HistorysOfDayModel historyDay = iconEvents[index];
+                                        return SizedBox(
+                                          width: 6,
+                                          height: 6,
+                                          child: Text(
+                                            eventList[index].emoji,
+                                            style:
+                                                const TextStyle(fontSize: 10),
+                                          ),
+                                        );
+                                      },
+                                      separatorBuilder:
+                                          (BuildContext context, int index) {
+                                        return const SizedBox(
+                                          width: 6,
+                                        );
+                                      },
+                                    ),
                                   );
                                 }
                                 return null;
@@ -437,11 +445,10 @@ class HistoryCard extends StatelessWidget {
         physics: const ClampingScrollPhysics(),
         itemBuilder: (context, index) {
           return GestureDetector(
-            onTap: () => Navigator.push(
+            onTap: () => Navigator.pushNamed(
               context,
-              MaterialPageRoute(
-                builder: (context) => LearningStaticScreen(histories[index].id),
-              ),
+              RoutesName.learningStaticScreen,
+              arguments: LearningStaticScreenArguments(histories[index].id),
             ),
             child: Container(
               padding: const EdgeInsets.symmetric(

@@ -33,8 +33,8 @@ class _FilterButtonState extends State<FilterButton>
     animationController = BottomSheet.createAnimationController(this);
     animationController
       ..addListener(() {})
-      ..duration = const Duration(milliseconds: 500)
-      ..reverseDuration = const Duration(milliseconds: 500);
+      ..duration = const Duration(milliseconds: 200)
+      ..reverseDuration = const Duration(milliseconds: 200);
     super.initState();
   }
 

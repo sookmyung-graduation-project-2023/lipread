@@ -8,10 +8,8 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginService {
-  static const login = 'login';
-
   static Future<void> saveUser(UserModel user) async {
-    final url = Uri.https(API.baseURL, login);
+    final url = Uri.https(API.baseURL, API.login);
     final headers = {HttpHeaders.contentTypeHeader: "application/json"};
     final body = json.encode(user.toJson());
 
@@ -23,7 +21,7 @@ class LoginService {
       );
 
       if (response.statusCode == 201) {
-        _handleSuccessOfSaveUser(response);
+        await _handleSuccessOfSaveUser(response);
       } else {
         _handleErrorOfSaveUser();
       }
@@ -32,16 +30,16 @@ class LoginService {
     }
   }
 
-  static void _handleSuccessOfSaveUser(http.Response response) {
-    debugPrint('user가 성공적으로 로그인했습니다.');
-    final tokens = _getTokens(response);
-    _saveTokens(tokens);
-  }
-
-  static List<String> _getTokens(http.Response response) {
+  static Future<void> _handleSuccessOfSaveUser(http.Response response) async {
     final String responseBody = utf8.decode(response.bodyBytes);
     final Map<String, dynamic> json = jsonDecode(responseBody);
+    debugPrint('user가 성공적으로 로그인했습니다.');
+    final tokens = await _getTokens(json);
+    await _saveTokens(tokens);
+    await _saveUserId(json['data']['UserId']);
+  }
 
+  static Future<List<String>> _getTokens(Map<String, dynamic> json) async {
     final String accessToken = json['data']['accessToken'];
     final String refreshToken = json['data']['refreshToken'];
 
@@ -51,10 +49,15 @@ class LoginService {
     return [accessToken, refreshToken];
   }
 
-  static void _saveTokens(List<String> tokens) async {
+  static Future<void> _saveTokens(List<String> tokens) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString('accessToken', tokens[0]);
     prefs.setString('refreshToken', tokens[1]);
+  }
+
+  static Future<void> _saveUserId(String uid) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('uid', uid);
   }
 
   static void _handleErrorOfSaveUser() {

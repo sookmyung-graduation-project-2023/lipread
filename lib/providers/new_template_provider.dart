@@ -3,12 +3,16 @@ import 'package:lipread/models/role_model.dart';
 import 'package:lipread/models/template/new_template_model.dart';
 
 class NewTemplateProvider with ChangeNotifier {
-  late final NewTemplateModel _newTemplate = NewTemplateModel();
+  NewTemplateModel _newTemplate = NewTemplateModel();
 
   NewTemplateModel get newTemplate => _newTemplate;
 
   set title(String title) {
     _newTemplate.title = title;
+  }
+
+  set parentTemplateId(String parentTemplateId) {
+    _newTemplate.parentTemplateId = parentTemplateId;
   }
 
   set description(String description) {
@@ -25,5 +29,9 @@ class NewTemplateProvider with ChangeNotifier {
 
   set words(List<String> words) {
     _newTemplate.words = words;
+  }
+
+  void clearAll() {
+    _newTemplate = NewTemplateModel();
   }
 }

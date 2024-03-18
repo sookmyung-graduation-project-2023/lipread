@@ -1,3 +1,11 @@
+class SharedPreferencesKeys {
+  static const String isLoggedIn = 'isLoggedIn';
+  static const String userId = 'userId';
+  static const String accessToken = 'accessToken';
+  static const String refreshToken = 'refreshToken';
+  static const String deviceToken = 'deviceToken';
+}
+
 enum TokenType { accessToken, refreshToken }
 
 enum MessageCodeType { correct, wrong, answer }

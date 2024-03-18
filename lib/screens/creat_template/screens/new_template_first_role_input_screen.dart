@@ -92,7 +92,7 @@ class _NewTemplateFirstRoleInputScreenState
       ),
       body: Column(
         children: [
-          const CreateTemplateProgressIndicator(.2),
+          const CreateTemplateProgressIndicator(.4),
           Expanded(
             child: SingleChildScrollView(
               child: Padding(

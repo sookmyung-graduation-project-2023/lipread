@@ -68,10 +68,6 @@ class _AccountScreenState extends State<AccountScreen> {
                                 hintText: '닉네임을 입력해 주세요',
                                 filled: true,
                                 fillColor: Colors.white,
-                                contentPadding: EdgeInsets.symmetric(
-                                  vertical: 20,
-                                  horizontal: 20,
-                                ),
                               ),
                             ),
                           ),

@@ -2,8 +2,15 @@ import 'dart:async';
 
 import 'package:avatar_glow/avatar_glow.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:lipread/components/modal_bottom_sheet.dart';
+import 'package:lipread/models/arguments/learning_screen.arguments.dart';
+import 'package:lipread/models/arguments/learning_static_screen_arguments.dart';
 import 'package:lipread/models/learning_static_model.dart';
+import 'package:lipread/routes/routing_constants.dart';
 import 'package:lipread/screens/learning_static/learning_static_screen.dart';
+import 'package:lipread/screens/template_description/template_description_screen.dart';
+import 'package:lipread/utilities/font_type.dart';
 
 import 'package:lipread/utilities/variables.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
@@ -16,14 +23,10 @@ import 'package:video_player/video_player.dart';
 import 'components/message_card.dart';
 
 class LearningScreen extends StatefulWidget {
-  final String id;
-  final String title;
-  final String emoji;
+  final LearningScreenArguments arguments;
 
   const LearningScreen(
-    this.id,
-    this.title,
-    this.emoji, {
+    this.arguments, {
     super.key,
   });
 
@@ -32,6 +35,7 @@ class LearningScreen extends StatefulWidget {
 }
 
 class _LearningScreenState extends State<LearningScreen> {
+  bool isLoading = true;
   int _seconds = 0;
   int _currentLearningMessageIndex = 0;
   int _learnedSentenceCount = 0;
@@ -45,18 +49,12 @@ class _LearningScreenState extends State<LearningScreen> {
   late VideoPlayerController _controller;
   String videoPath = "";
 
-  late Future<List<MessageModel>> _messages;
+  late List<MessageModel> _messages;
+  final ScrollController _scrollController = ScrollController();
 
-  @override
-  void initState() {
-    super.initState();
-    _messages = LearningService.getMessagesBy(widget.id);
-
-    _speechToText = stt.SpeechToText();
-
-    _initSpeech();
-
-    videoPath = 'https://dyxryua47v6ay.cloudfront.net/a1.mp4';
+  void fetchData() async {
+    _messages = await LearningService.getMessagesBy(widget.arguments.id);
+    videoPath = _messages[0].videoUrl;
     _controller = VideoPlayerController.networkUrl(Uri.parse(videoPath));
 
     _controller.addListener(() {
@@ -65,6 +63,16 @@ class _LearningScreenState extends State<LearningScreen> {
 
     _controller.initialize().then((_) => setState(() {}));
     _startTimer();
+    isLoading = false;
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+    _speechToText = stt.SpeechToText();
+    _initSpeech();
   }
 
   @override
@@ -77,6 +85,14 @@ class _LearningScreenState extends State<LearningScreen> {
   void _initSpeech() async {
     await _speechToText.initialize();
     setState(() {});
+  }
+
+  void _scrollDown() {
+    _scrollController.animateTo(
+      _scrollController.position.maxScrollExtent,
+      duration: const Duration(seconds: 2),
+      curve: Curves.fastOutSlowIn,
+    );
   }
 
   Future<void> play(String url) async {
@@ -100,7 +116,19 @@ class _LearningScreenState extends State<LearningScreen> {
   void _stopListening() async {
     debugPrint('Stop Listening');
     await _speechToText.stop();
-    _learningStateType = LearningStateType.recorded;
+    if (_recognizedWords == '') {
+      _learningStateType = LearningStateType.beforeRecorded;
+      Fluttertoast.showToast(
+        msg: "음성을 제대로 녹음해 주세요",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        textColor: Colors.white,
+        fontSize: 16,
+      );
+    } else {
+      _learningStateType = LearningStateType.recorded;
+    }
     setState(() {});
   }
 
@@ -108,7 +136,14 @@ class _LearningScreenState extends State<LearningScreen> {
     debugPrint('음성 결과: ${result.finalResult}, 단어: ${result.recognizedWords}');
     setState(() {
       _recognizedWords = result.recognizedWords;
-      if (result.finalResult) _learningStateType = LearningStateType.recorded;
+      debugPrint('word: $_recognizedWords');
+      if (result.finalResult) {
+        if (_recognizedWords == '') {
+          _learningStateType = LearningStateType.beforeRecorded;
+        } else {
+          _learningStateType = LearningStateType.recorded;
+        }
+      }
     });
   }
 
@@ -128,23 +163,89 @@ class _LearningScreenState extends State<LearningScreen> {
   Future<String> _saveStudy() async {
     LearningStaticModel result = LearningStaticModel(
       learningSentenceCount: _learnedSentenceCount,
-      emoji: widget.emoji,
-      title: widget.title,
+      emoji: widget.arguments.emoji,
+      title: widget.arguments.title,
       totalLearningTimeInMilliseconds: _seconds * 1000,
       correctRate: 1 - (_wrongSentences.length / _learnedSentenceCount),
       wrongSetences: [..._wrongSentences.map((e) => e.getWrongSetence())],
     );
 
-    return await LearningService.saveLearningStatic(widget.id, result);
+    return await LearningService.saveLearningStatic(
+        widget.arguments.id, result);
   }
 
   void _finishStudy() async {
+    debugPrint('finished');
     final id = await _saveStudy();
-    Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => LearningStaticScreen(id),
-        ));
+
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      RoutesName.learningStaticScreen,
+      (route) => route.settings.name == RoutesName.initialScreen,
+      arguments: LearningStaticScreenArguments(id),
+    );
+  }
+
+  void _showModalBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      elevation: 12,
+      isDismissible: true,
+      barrierColor: AppColor.grayScale.g900.withOpacity(.4),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(32),
+        ),
+      ),
+      isScrollControlled: true,
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * .52,
+      ),
+      builder: (context) {
+        return ModalBottomSheet(
+            emoji: '😲',
+            title: '학습을 종료하시겠어요?',
+            description: '다음에 이어서 학습할 수 없어요.\n지금까지 학습한 기록만 저장돼요.',
+            actionButtonText: '네 종료할게요',
+            backButtonText: '계속 학습하기',
+            actionButtonOnPressed: _finishStudy,
+            backButtonOnPressed: () => Navigator.pop(context));
+      },
+    );
+  }
+
+  void _showBack() {
+    showModalBottomSheet(
+      context: context,
+      routeSettings: const RouteSettings(),
+      elevation: 12,
+      isDismissible: true,
+      barrierColor: AppColor.grayScale.g900.withOpacity(.4),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(32),
+        ),
+      ),
+      isScrollControlled: true,
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * .52,
+      ),
+      builder: (context) {
+        return ModalBottomSheet(
+          emoji: '😨',
+          title: '학습을 그만두시겠어요?',
+          description: '지금 학습을 종료하면\n학습한 기록이 저장되지 않아요.',
+          actionButtonText: '네 그만할래요',
+          actionButtonColor: AppColor.orangeColor,
+          backButtonText: '계속 학습하기',
+          actionButtonOnPressed: () {
+            Navigator.pop(context);
+            Navigator.pop(context);
+          },
+          backButtonOnPressed: () => Navigator.pop(context),
+        );
+      },
+    );
   }
 
   void _setVideo(String url) {
@@ -159,25 +260,49 @@ class _LearningScreenState extends State<LearningScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('학습하기'),
-        actions: [
-          IconButton(
-              onPressed: _finishStudy, icon: const Icon(Icons.check_circle)),
-        ],
-      ),
-      body: FutureBuilder(
-        future: _messages,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            if (snapshot.hasError) {
-              debugPrint('학습 데이터를 로드하던 중에 에러가 발생했습니다.');
-              debugPrint('${snapshot.error}');
-              return throw Error();
-            } else {
-              List<MessageModel> messages = snapshot.data!;
-              return Column(
+    return isLoading
+        ? const Scaffold(
+            body: Center(
+            child: CircularProgressIndicator(),
+          ))
+        : PopScope(
+            canPop: false,
+            onPopInvoked: (bool didPop) {
+              if (didPop) {
+                return;
+              }
+              _showBack();
+            },
+            child: Scaffold(
+              appBar: AppBar(
+                title: const Text('학습하기'),
+                automaticallyImplyLeading: false,
+                actions: [
+                  TextButton(
+                      onPressed: _learnedSentenceCount != 0 && _seconds != 00
+                          ? _showModalBottomSheet
+                          : null,
+                      style: TextButton.styleFrom(
+                        minimumSize: const Size(0, 0),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 16,
+                          horizontal: 20,
+                        ),
+                        backgroundColor: Colors.transparent,
+                        foregroundColor: AppColor.primaryColor,
+                        textStyle: TextStyle(
+                          fontFamily: FontType.pretendard.name,
+                          fontSize: 16,
+                          height: 1,
+                          fontVariations: const [
+                            FontVariation('wght', 700),
+                          ],
+                        ),
+                      ),
+                      child: const Text('학습 종료')),
+                ],
+              ),
+              body: Column(
                 children: [
                   AspectRatio(
                     aspectRatio: 5 / 3,
@@ -189,6 +314,11 @@ class _LearningScreenState extends State<LearningScreen> {
                         VideoProgressIndicator(
                           _controller,
                           allowScrubbing: true,
+                          colors: VideoProgressColors(
+                            playedColor: AppColor.primaryColor,
+                            bufferedColor: AppColor.grayScale.g300,
+                            backgroundColor: AppColor.grayScale.g300,
+                          ),
                         ),
                       ],
                     ),
@@ -200,95 +330,115 @@ class _LearningScreenState extends State<LearningScreen> {
                       SingleChildScrollView(
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 24),
-                          child: Column(children: [
-                            const SizedBox(
-                              height: 32,
-                            ),
-                            ListView.separated(
-                                shrinkWrap: true,
-                                primary: false,
-                                itemBuilder: (context, index) {
-                                  if (index < _currentLearningMessageIndex) {
-                                    return MessageCard(
-                                      id: index,
-                                      text: messages[index].text,
-                                      role: messages[index].role,
-                                      roleType: messages[index].roleType,
-                                      videoUrl: messages[index].videoUrl,
-                                      messageCheck: messages[index]
-                                          .checkInformation
-                                          ?.messageCheck,
-                                      learningStateType:
-                                          LearningStateType.completed,
-                                    );
-                                  }
-                                  return MessageCard(
-                                    id: index,
-                                    text: _recognizedWords,
-                                    role: messages[index].role,
-                                    roleType: messages[index].roleType,
-                                    videoUrl: messages[index].videoUrl,
-                                    learningStateType: _learningStateType,
-                                    messageCheck: messages[index]
-                                        .checkInformation
-                                        ?.messageCheck,
-                                    onPressedRerecord: () {
-                                      setState(() {
-                                        _recognizedWords = '';
-                                        _learningStateType =
-                                            LearningStateType.beforeRecorded;
-                                      });
-                                    },
-                                    onPressedCheck: () async {
-                                      messages[index].checkInformation =
-                                          await LearningService
-                                              .checkMessageWith(
-                                                  _recognizedWords,
-                                                  messages[index].text);
+                          child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                const SizedBox(
+                                  height: 32,
+                                ),
+                                ListView.separated(
+                                    controller: _scrollController,
+                                    shrinkWrap: true,
+                                    primary: false,
+                                    itemBuilder: (context, index) {
+                                      if (index <
+                                          _currentLearningMessageIndex) {
+                                        return MessageCard(
+                                          id: index,
+                                          text: _messages[index].text,
+                                          role: _messages[index].role,
+                                          roleType: _messages[index].roleType,
+                                          videoUrl: _messages[index].videoUrl,
+                                          messageCheck: _messages[index]
+                                              .checkInformation
+                                              ?.messageCheck,
+                                          learningStateType:
+                                              LearningStateType.completed,
+                                        );
+                                      }
+                                      return MessageCard(
+                                        id: index,
+                                        text: _recognizedWords,
+                                        role: _messages[index].role,
+                                        roleType: _messages[index].roleType,
+                                        videoUrl: _messages[index].videoUrl,
+                                        learningStateType: _learningStateType,
+                                        messageCheck: _messages[index]
+                                            .checkInformation
+                                            ?.messageCheck,
+                                        onPressedRerecord: () {
+                                          setState(() {
+                                            _recognizedWords = '';
+                                            _learningStateType =
+                                                LearningStateType
+                                                    .beforeRecorded;
+                                          });
+                                        },
+                                        onPressedCheck: () async {
+                                          _messages[_currentLearningMessageIndex]
+                                                  .checkInformation =
+                                              await LearningService
+                                                  .checkMessageWith(
+                                                      _recognizedWords,
+                                                      _messages[index].text);
 
-                                      setState(() {
-                                        _learningStateType =
-                                            LearningStateType.corrected;
-                                      });
+                                          setState(() {
+                                            _learningStateType =
+                                                LearningStateType.corrected;
+                                          });
+                                        },
+                                        onPressedComplete: () {
+                                          setState(() {
+                                            _recognizedWords = '';
+                                            if (!_messages[
+                                                    _currentLearningMessageIndex]
+                                                .checkInformation!
+                                                .isCorrect) {
+                                              _wrongSentences.add(_messages[
+                                                  _currentLearningMessageIndex]);
+                                            }
+                                            _learnedSentenceCount++;
+                                            if (_messages.length - 1 >
+                                                _currentLearningMessageIndex) {
+                                              _currentLearningMessageIndex++;
+                                              _setVideo(_messages[
+                                                      _currentLearningMessageIndex]
+                                                  .videoUrl);
+                                              _learningStateType =
+                                                  LearningStateType
+                                                      .beforeRecorded;
+                                            } else {
+                                              _learningStateType =
+                                                  LearningStateType.completed;
+                                              _stopTimer();
+                                            }
+                                          });
+                                        },
+                                      );
                                     },
-                                    onPressedComplete: () {
-                                      setState(() {
-                                        _recognizedWords = '';
-                                        if (!messages[
-                                                _currentLearningMessageIndex]
-                                            .checkInformation!
-                                            .isCorrect) {
-                                          _wrongSentences.add(messages[
-                                              _currentLearningMessageIndex]);
-                                        }
-                                        _learnedSentenceCount++;
-                                        if (messages.length - 1 >
-                                            _currentLearningMessageIndex) {
-                                          _currentLearningMessageIndex++;
-                                          _setVideo(messages[
-                                                  _currentLearningMessageIndex]
-                                              .videoUrl);
-                                          _learningStateType =
-                                              LearningStateType.beforeRecorded;
-                                        } else {
-                                          _learningStateType =
-                                              LearningStateType.completed;
-                                          _stopTimer();
-                                        }
-                                      });
+                                    separatorBuilder: (context, index) {
+                                      return const SizedBox(
+                                        height: 20,
+                                      );
                                     },
-                                  );
-                                },
-                                separatorBuilder: (context, index) {
-                                  return const SizedBox(
-                                    height: 20,
-                                  );
-                                },
-                                itemCount: _currentLearningMessageIndex + 1),
-                            const SizedBox(
-                              height: 160,
-                            ),
-                          ]),
+                                    itemCount:
+                                        _currentLearningMessageIndex + 1),
+                                if (_learningStateType ==
+                                    LearningStateType.completed)
+                                  const Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
+                                    children: [
+                                      SizedBox(
+                                        height: 32,
+                                      ),
+                                      Finished(),
+                                    ],
+                                  ),
+                                const SizedBox(
+                                  height: 160,
+                                ),
+                              ]),
                         ),
                       ),
                       if (_learningStateType ==
@@ -323,11 +473,40 @@ class _LearningScreenState extends State<LearningScreen> {
                     ],
                   )),
                 ],
-              );
-            }
-          }
-          return const Center(child: CircularProgressIndicator());
-        },
+              ),
+            ),
+          );
+  }
+}
+
+class Finished extends StatelessWidget {
+  const Finished({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        vertical: 20,
+        horizontal: 24,
+      ),
+      decoration: BoxDecoration(
+        color: AppColor.grayScale.g100,
+        borderRadius: const BorderRadius.all(
+          Radius.circular(12),
+        ),
+      ),
+      child: Text(
+        "학습이 종료되었어요!\n상단에 있는 학습 종료 버튼을 눌러주세요.",
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          fontSize: 16,
+          fontFamily: FontType.pretendard.name,
+          fontVariations: const [FontVariation('wght', 500)],
+          color: AppColor.grayScale.g600,
+          height: 1.55,
+        ),
       ),
     );
   }

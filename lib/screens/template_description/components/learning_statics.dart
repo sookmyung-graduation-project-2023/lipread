@@ -1,6 +1,8 @@
 import 'dart:ui';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:lipread/utilities/app_color_scheme.dart';
 import 'package:lipread/utilities/font_type.dart';
 import 'package:lipread/utilities/functions.dart';
@@ -24,10 +26,11 @@ class LearningStatics extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         IntrinsicHeight(
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
                 child: Container(
@@ -67,86 +70,92 @@ class LearningStatics extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 24,
-                        horizontal: 24,
-                      ),
-                      decoration: BoxDecoration(
-                        borderRadius: const BorderRadius.all(
-                          Radius.circular(12),
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 24,
+                          horizontal: 24,
                         ),
-                        border: Border.all(
-                          width: 1,
-                          color: AppColor.grayScale.g200,
+                        decoration: BoxDecoration(
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(12),
+                          ),
+                          border: Border.all(
+                            width: 1,
+                            color: AppColor.grayScale.g200,
+                          ),
                         ),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(
-                            '누적 학습 시간',
-                            style: Theme.of(context).textTheme.titleSmall,
-                          ),
-                          const SizedBox(
-                            height: 12,
-                          ),
-                          Text(
-                            formatTotalLearningTimeWith(
-                                totalLearningTimeInMilliseconds),
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontFamily: FontType.pretendard.name,
-                              fontVariations: const [
-                                FontVariation('wght', 700)
-                              ],
-                              color: AppColor.primaryColor,
-                              height: 1,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              '누적 학습 시간',
+                              style: Theme.of(context).textTheme.titleSmall,
                             ),
-                          ),
-                        ],
+                            const SizedBox(
+                              height: 12,
+                            ),
+                            Text(
+                              formatTotalLearningTimeWith(
+                                  totalLearningTimeInMilliseconds),
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontFamily: FontType.pretendard.name,
+                                fontVariations: const [
+                                  FontVariation('wght', 700)
+                                ],
+                                color: AppColor.primaryColor,
+                                height: 1,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                     const SizedBox(
                       height: 12,
                     ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 24,
-                        horizontal: 24,
-                      ),
-                      decoration: BoxDecoration(
-                        borderRadius: const BorderRadius.all(
-                          Radius.circular(12),
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 24,
+                          horizontal: 24,
                         ),
-                        border: Border.all(
-                          width: 1,
-                          color: AppColor.grayScale.g200,
+                        decoration: BoxDecoration(
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(12),
+                          ),
+                          border: Border.all(
+                            width: 1,
+                            color: AppColor.grayScale.g200,
+                          ),
                         ),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(
-                            '누적 학습 횟수',
-                            style: Theme.of(context).textTheme.titleSmall,
-                          ),
-                          const SizedBox(
-                            height: 12,
-                          ),
-                          Text(
-                            '$totalLearningCount회',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontFamily: FontType.pretendard.name,
-                              fontVariations: const [
-                                FontVariation('wght', 700)
-                              ],
-                              color: AppColor.primaryColor,
-                              height: 1,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              '누적 학습 횟수',
+                              style: Theme.of(context).textTheme.titleSmall,
                             ),
-                          ),
-                        ],
+                            const SizedBox(
+                              height: 12,
+                            ),
+                            Text(
+                              '$totalLearningCount회',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontFamily: FontType.pretendard.name,
+                                fontVariations: const [
+                                  FontVariation('wght', 700)
+                                ],
+                                color: AppColor.primaryColor,
+                                height: 1,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],

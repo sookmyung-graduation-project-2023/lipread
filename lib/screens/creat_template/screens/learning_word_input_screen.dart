@@ -86,7 +86,7 @@ class _LearningWordInputScreenState extends State<LearningWordInputScreen> {
       ),
       body: Column(
         children: [
-          const CreateTemplateProgressIndicator(.2),
+          const CreateTemplateProgressIndicator(.7),
           Expanded(
             child: SingleChildScrollView(
               child: Padding(

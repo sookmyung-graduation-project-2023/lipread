@@ -1,11 +1,16 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:lipread/components/base_alert_dialog.dart';
 import 'package:lipread/models/user_model.dart';
-import 'package:lipread/screens/home/home_screen.dart';
+import 'package:lipread/providers/sharedpreferences_provider.dart';
+import 'package:lipread/routes/routing_constants.dart';
 import 'package:lipread/services/google_service.dart';
 import 'package:lipread/services/login_service.dart';
 import 'package:lipread/utilities/app_color_scheme.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -15,59 +20,113 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  bool _onloginBtnPressed = false;
+  bool _isLoggining = false;
 
-  void _signInWithGoogle() async {
-    debugPrint('sign in with Google');
+  @override
+  void initState() {
+    super.initState();
+    _checkLoggedIn();
+  }
+
+  void _checkLoggedIn() async {
+    if (context.read<SharedPreferencesProvider>().isLoggedIn) {
+      _routeToHomeScreen();
+    }
+  }
+
+  void _routeToHomeScreen() {
+    Navigator.pushReplacementNamed(context, RoutesName.initialScreen);
+  }
+
+  void _handleLoginBtnPressed() async {
+    final status = await _requestPermission();
+    await _checkStatus(status);
+  }
+
+  Future<AuthorizationStatus> _requestPermission() async {
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+    NotificationSettings settings = await messaging.requestPermission(
+      alert: true, // 디바이스 알림
+      badge: true, // 읽지 않은 알림 아이콘
+      sound: true, // 소리 권한
+    );
+    debugPrint('[test] status: ${settings.authorizationStatus}');
+    return settings.authorizationStatus;
+  }
+
+  Future<void> _checkStatus(AuthorizationStatus status) async {
+    if (status == AuthorizationStatus.authorized ||
+        status == AuthorizationStatus.provisional) {
+      await _signInWithGoogle();
+      _routeToHomeScreen();
+    }
+    if (status == AuthorizationStatus.denied) {
+      _showPermissionAlertDialog();
+    }
+  }
+
+  Future<void> _signInWithGoogle() async {
     final googleAccount = await GoogleService.signin();
-    debugPrint('googleAccount: $googleAccount');
-
     if (googleAccount != null) {
+      setState(() {
+        _isLoggining = true;
+      });
       final user = await _createUserWith(googleAccount);
       await LoginService.saveUser(user);
+      _setLoggin();
     }
   }
 
   Future<UserModel> _createUserWith(GoogleSignInAccount googleAccount) async {
     return UserModel(
       id: googleAccount.id,
-      name: googleAccount.displayName ?? 'name',
+      name: googleAccount.displayName ?? '이름없음',
       email: googleAccount.email,
       deviceToken: await _getToken(),
     );
   }
 
   Future<String?> _getToken() async {
-    _requestPermission();
-    return await FirebaseMessaging.instance.getToken();
+    final String? deviceToken = await FirebaseMessaging.instance.getToken();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('deviceToken', deviceToken!);
+    return deviceToken;
   }
 
-  void _requestPermission() async {
-    FirebaseMessaging messaging = FirebaseMessaging.instance;
-    NotificationSettings settings = await messaging.requestPermission(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
-
-    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      debugPrint('User granted permission');
-    } else if (settings.authorizationStatus ==
-        AuthorizationStatus.provisional) {
-      debugPrint('User granted provisional permission');
-    } else {
-      debugPrint('no');
-    }
+  void _setLoggin() {
+    context.read<SharedPreferencesProvider>().setLoggedIn(true);
   }
 
-  void _routeToHomeScreen(BuildContext context) {
-    Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => const HomeScreen()));
-  }
-
-  void _handleLoginBtnPressed() {
-    _signInWithGoogle();
-    _routeToHomeScreen(context);
+  Future<BaseAlertDialog?> _showPermissionAlertDialog() {
+    return showDialog<BaseAlertDialog>(
+        context: context,
+        builder: (context) {
+          return BaseAlertDialog(
+            title: '알림 권한 요청',
+            description: '알림을 받으려면 알림 권한이 필요합니다.\n설정에서 알림 권한을 허용해주세요.',
+            actions: [
+              TextButton(
+                onPressed: () async {
+                  await openAppSettings();
+                  Navigator.pop(context);
+                },
+                child: const Text('설정 열기'),
+              ),
+              const SizedBox(
+                height: 4,
+              ),
+              TextButton(
+                style: TextButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    foregroundColor: AppColor.grayScale.g600),
+                onPressed: () {
+                  Navigator.pop(context); // 다이얼로그 닫기
+                },
+                child: const Text('취소'),
+              ),
+            ],
+          );
+        });
   }
 
   @override
@@ -118,14 +177,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Text(
-                        'LipRead',
+                        'LipRead.',
                         style: Theme.of(context).textTheme.displayMedium,
                       ),
                       const SizedBox(
                         height: 8,
                       ),
                       Text(
-                        '나에게 필요한 대화로\n구화를 연습해요',
+                        '나에게 필요한 대화로\n구어를 연습해요',
                         style: Theme.of(context).textTheme.headlineSmall,
                       ),
                     ],
@@ -134,16 +193,13 @@ class _LoginScreenState extends State<LoginScreen> {
                     height: 60,
                   ),
                   TextButton(
-                    onPressed: _onloginBtnPressed
-                        ? null
-                        : () {
-                            setState(() {
-                              _onloginBtnPressed = true;
-                              _handleLoginBtnPressed();
-                            });
-                          },
-                    child: const Text(
-                      'Google로 시작하기',
+                    style: TextButton.styleFrom(
+                      disabledBackgroundColor: AppColor.primaryColor,
+                      disabledForegroundColor: AppColor.primaryLightColor,
+                    ),
+                    onPressed: _isLoggining ? null : _handleLoginBtnPressed,
+                    child: Text(
+                      _isLoggining ? 'Google 로그인 중' : 'Google로 시작하기',
                     ),
                   ),
                   const SizedBox(

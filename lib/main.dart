@@ -4,10 +4,13 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:lipread/firebase_options.dart';
-import 'package:lipread/providers/new_template_provider.dart';
-import 'package:lipread/providers/token_provider.dart';
 
-import 'package:lipread/screens/login/login_screen.dart';
+import 'package:lipread/providers/new_template_provider.dart';
+import 'package:lipread/providers/sharedpreferences_provider.dart';
+import 'package:lipread/providers/token_provider.dart';
+import 'package:lipread/routes/route_generator.dart';
+import 'package:lipread/routes/routing_constants.dart';
+
 import 'package:lipread/utilities/app_color_scheme.dart';
 import 'package:lipread/utilities/font_type.dart';
 import 'package:provider/provider.dart';
@@ -16,14 +19,23 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting();
   await initializeDefault();
+  SharedPreferencesProvider sharedPreferencesProvider =
+      SharedPreferencesProvider();
+  await sharedPreferencesProvider.init();
+  TokenProvider tokenProvider = TokenProvider();
+  await tokenProvider.init();
+
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (_) => TokenProvider(),
+          create: (_) => NewTemplateProvider(),
         ),
         ChangeNotifierProvider(
-          create: (_) => NewTemplateProvider(),
+          create: (_) => sharedPreferencesProvider,
+        ),
+        ChangeNotifierProvider(
+          create: (_) => tokenProvider,
         )
       ],
       child: const MyApp(),
@@ -56,7 +68,8 @@ class MyApp extends StatelessWidget {
         bottomSheetTheme: bottomSheetTheme,
         inputDecorationTheme: inputDecorationTheme,
       ),
-      home: const LoginScreen(),
+      initialRoute: '/',
+      onGenerateRoute: RouteGenerator.generateRoute,
     );
   }
 }
@@ -157,9 +170,9 @@ var textButtonTheme = TextButtonThemeData(
 );
 
 var textTheme = TextTheme(
-  displayMedium: const TextStyle(
-    fontSize: 40,
-    fontFamily: 'bronova',
+  displayMedium: TextStyle(
+    fontSize: 36,
+    fontFamily: FontType.bronova.name,
     color: Colors.white,
     height: 1,
   ),

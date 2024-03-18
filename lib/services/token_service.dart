@@ -13,16 +13,18 @@ class TokenService {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String accessToken = prefs.getString('accessToken')!;
     String refreshToken = prefs.getString('refreshToken')!;
+    String deviceToken = prefs.getString('deviceToken')!;
 
     Map<String, String> headers = {
       HttpHeaders.authorizationHeader: "Bearer $accessToken",
       'refresh': refreshToken,
+      'devicetoken': deviceToken,
     };
 
     final url = Uri.https(API.baseURL, refresh);
 
     try {
-      final response = await http.post(
+      final response = await http.get(
         url,
         headers: headers,
       );

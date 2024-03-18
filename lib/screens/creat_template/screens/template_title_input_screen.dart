@@ -5,6 +5,7 @@ import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:lipread/components/role_avatar.dart';
 import 'package:lipread/components/role_avatar_button.dart';
 import 'package:lipread/providers/new_template_provider.dart';
+import 'package:lipread/routes/routing_constants.dart';
 import 'package:lipread/screens/creat_template/screens/new_template_first_role_input_screen.dart';
 import 'package:lipread/screens/home/home_screen.dart';
 import 'package:lipread/services/template_service.dart';
@@ -49,17 +50,19 @@ class _TemplateTitleInputScreenState extends State<TemplateTitleInputScreen> {
     });
   }
 
-  void _handleCompletetBtn() {
+  void _handleCompletetBtn() async {
     context.read<NewTemplateProvider>().title = _titleTextController.text;
+    TemplateService.createNewTemplate(
+        context.read<NewTemplateProvider>().newTemplate);
     _routeToNextScreen();
   }
 
   void _routeToNextScreen() {
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const TestScreen(),
-        ));
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      RoutesName.initialScreen,
+      ModalRoute.withName(RoutesName.initialScreen),
+    );
   }
 
   @override
@@ -82,7 +85,7 @@ class _TemplateTitleInputScreenState extends State<TemplateTitleInputScreen> {
       ),
       body: Column(
         children: [
-          const CreateTemplateProgressIndicator(.2),
+          const CreateTemplateProgressIndicator(.9),
           SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
