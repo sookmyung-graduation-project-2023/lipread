@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:lipread/models/user_model.dart';
 import 'package:lipread/services/api.dart';
 import 'package:http/http.dart' as http;
+import 'package:lipread/utilities/variables.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -36,7 +37,7 @@ class LoginService {
     debugPrint('user가 성공적으로 로그인했습니다.');
     final tokens = await _getTokens(json);
     await _saveTokens(tokens);
-    await _saveUserId(json['data']['UserId']);
+    await _saveUserId(json['data']['UID']);
   }
 
   static Future<List<String>> _getTokens(Map<String, dynamic> json) async {
@@ -56,8 +57,9 @@ class LoginService {
   }
 
   static Future<void> _saveUserId(String uid) async {
+    debugPrint(uid);
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString('uid', uid);
+    prefs.setString(SharedPreferencesKeys.userId, uid);
   }
 
   static void _handleErrorOfSaveUser() {
