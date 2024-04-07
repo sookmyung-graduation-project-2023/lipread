@@ -13,11 +13,6 @@ import 'package:lipread/utilities/variables.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LearningService {
-  static const String roleplay = 'roleplay';
-  static const String chatList = 'chatList';
-  static const String checkChat = 'checkChat';
-  static const String learningRecord = 'learningRecord';
-
   static Future<List<MessageModel>> getMessagesBy(String id) async {
     List<MessageModel> messagesInstances = [];
 
@@ -28,7 +23,7 @@ class LearningService {
       HttpHeaders.authorizationHeader: "Bearer $accessToken",
     };
 
-    final url = Uri.https(API.baseURL, '$roleplay/$chatList/$id');
+    final url = Uri.https(API.baseURL, '${API.roleplay}/${API.chatList}/$id');
     final response = await http.get(url, headers: headers);
     if (response.statusCode == 401) {
       await TokenService.refreshAccessToken();
@@ -63,7 +58,7 @@ class LearningService {
       "answer": answer,
     });
 
-    final url = Uri.https(API.baseURL, '$roleplay/$checkChat');
+    final url = Uri.https(API.baseURL, '${API.roleplay}/${API.checkChat}');
     final response = await http.post(
       url,
       headers: headers,
@@ -104,7 +99,7 @@ class LearningService {
       HttpHeaders.authorizationHeader: "Bearer $accessToken",
     };
 
-    final url = Uri.https(API.baseURL, '$learningRecord/$id');
+    final url = Uri.https(API.baseURL, '${API.learningRecord}/$id');
     final response = await http.get(url, headers: headers);
     if (response.statusCode == 401) {
       await TokenService.refreshAccessToken();
@@ -130,7 +125,7 @@ class LearningService {
 
     var body = json.encode(learningResult.toJson());
 
-    final url = Uri.https(API.baseURL, '$learningRecord/$id');
+    final url = Uri.https(API.baseURL, '${API.learningRecord}/$id');
     final response = await http.post(
       url,
       headers: headers,

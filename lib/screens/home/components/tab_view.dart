@@ -104,7 +104,13 @@ class _TabViewState extends State<TabView> with SingleTickerProviderStateMixin {
                         }
                       }
                       if (!snapshot.hasData) {
-                        return const Center(child: CircularProgressIndicator());
+                        return const Padding(
+                          padding:
+                              EdgeInsetsDirectional.symmetric(vertical: 44),
+                          child: Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                        );
                       } else {
                         final List<OfficialTemplateModel> officialTemplates =
                             snapshot.data!;

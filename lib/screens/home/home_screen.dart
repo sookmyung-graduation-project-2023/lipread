@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:lipread/screens/account/account_screen.dart';
 import 'package:lipread/screens/history/history_screen.dart';
 import 'package:lipread/screens/notification/notification_screen.dart';
-import 'package:lipread/test_screen.dart';
 import 'package:lipread/utilities/font_type.dart';
 import 'components/home_banner.dart';
 import 'components/tab_view.dart';

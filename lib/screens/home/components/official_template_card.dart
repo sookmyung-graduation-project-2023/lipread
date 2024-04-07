@@ -39,11 +39,16 @@ class OfficialTemplateCard extends StatelessWidget {
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
-          Text(
-            emoji,
-            textAlign: TextAlign.end,
-            style: const TextStyle(
-              fontSize: 52,
+          Expanded(
+            child: Align(
+              alignment: Alignment.bottomRight,
+              child: Text(
+                emoji,
+                textAlign: TextAlign.end,
+                style: const TextStyle(
+                  fontSize: 52,
+                ),
+              ),
             ),
           ),
         ],

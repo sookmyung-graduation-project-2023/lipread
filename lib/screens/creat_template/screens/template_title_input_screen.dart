@@ -1,18 +1,7 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
-import 'package:lipread/components/role_avatar.dart';
-import 'package:lipread/components/role_avatar_button.dart';
 import 'package:lipread/providers/new_template_provider.dart';
 import 'package:lipread/routes/routing_constants.dart';
-import 'package:lipread/screens/creat_template/screens/new_template_first_role_input_screen.dart';
-import 'package:lipread/screens/home/home_screen.dart';
 import 'package:lipread/services/template_service.dart';
-import 'package:lipread/test_screen.dart';
-import 'package:lipread/utilities/app_color_scheme.dart';
-import 'package:lipread/utilities/font_type.dart';
-import 'package:lipread/utilities/variables.dart';
 import 'package:provider/provider.dart';
 
 import '../components/create_template_progress_indicator.dart';
