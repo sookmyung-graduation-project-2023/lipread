@@ -3,14 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:lipread/components/base_alert_dialog.dart';
 import 'package:lipread/models/user_model.dart';
-import 'package:lipread/providers/sharedpreferences_provider.dart';
 import 'package:lipread/routes/routing_constants.dart';
 import 'package:lipread/services/google_service.dart';
 import 'package:lipread/services/login_service.dart';
+import 'package:lipread/storage/secure_storage.dart';
 import 'package:lipread/utilities/app_color_scheme.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -25,11 +23,15 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    _checkLoggedIn();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkLoggedIn();
+    });
   }
 
   void _checkLoggedIn() async {
-    if (context.read<SharedPreferencesProvider>().isLoggedIn) {
+    final isLogginedIn =
+        await SecureStorage.storage.read(key: StorageKey.isLoggedIn);
+    if (isLogginedIn == StorageValue.login) {
       _routeToHomeScreen();
     }
   }
@@ -73,7 +75,6 @@ class _LoginScreenState extends State<LoginScreen> {
       });
       final user = await _createUserWith(googleAccount);
       await LoginService.saveUser(user);
-      _setLoggin();
     }
   }
 
@@ -88,13 +89,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<String?> _getToken() async {
     final String? deviceToken = await FirebaseMessaging.instance.getToken();
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString('deviceToken', deviceToken!);
-    return deviceToken;
-  }
+    await SecureStorage.storage.write(
+      key: StorageKey.deviceToken,
+      value: deviceToken,
+    );
 
-  void _setLoggin() {
-    context.read<SharedPreferencesProvider>().setLoggedIn(true);
+    return deviceToken;
   }
 
   Future<BaseAlertDialog?> _showPermissionAlertDialog() {

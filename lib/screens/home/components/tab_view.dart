@@ -3,8 +3,6 @@ import 'package:lipread/exceptions/refresh_fail_exception.dart';
 import 'package:lipread/models/arguments/template_description_screen_arguments.dart';
 import 'package:lipread/models/template/official_template_model.dart';
 import 'package:lipread/models/template/unofficial_template_model.dart';
-import 'package:lipread/providers/sharedpreferences_provider.dart';
-import 'package:lipread/providers/token_provider.dart';
 import 'package:lipread/routes/routing_constants.dart';
 import 'package:lipread/screens/creat_template/screens/create_template_screen.dart';
 import 'package:lipread/screens/creat_template/screens/template_title_input_screen.dart';
@@ -38,8 +36,7 @@ class _TabViewState extends State<TabView> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _officialTemplates =
-        TemplateService.getOfficialTemplates(context.read<TokenProvider>());
+    _officialTemplates = TemplateService.getOfficialTemplates();
     _unofficialTemplates = TemplateService.getUnOfficialTemplate();
     _tabController = TabController(
       length: 2,
@@ -69,9 +66,8 @@ class _TabViewState extends State<TabView> with SingleTickerProviderStateMixin {
 
   void _handleCategorySelected(OfficialCategoryType category) {
     setState(() {
-      _officialTemplates = TemplateService.getOfficialTemplates(
-          context.read<TokenProvider>(),
-          category: category);
+      _officialTemplates =
+          TemplateService.getOfficialTemplates(category: category);
       debugPrint(category.value);
     });
   }
@@ -180,8 +176,8 @@ class _TabViewState extends State<TabView> with SingleTickerProviderStateMixin {
                       }
                     }),
               ),
-              const UnOfficialTemplateTabItem(
-                getTemplates: TemplateService.getUnOfficialTemplate,
+              UnOfficialTemplateTabItem(
+                getTemplates: () => TemplateService.getUnOfficialTemplate(),
               ),
             ],
           ),
